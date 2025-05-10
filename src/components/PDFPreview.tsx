@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import type { RenderTask } from "pdfjs-dist"
+import type { RenderTask, PDFDocumentProxy } from "pdfjs-dist"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, ExternalLink } from "lucide-react"
@@ -18,7 +18,7 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [numPages, setNumPages] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(true)
-  const [pdfDocument, setPdfDocument] = useState<any>(null)
+  const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy | null>(null)
 
   const renderPage = async (pageNum: number, currentScale: number) => {
     if (!pdfDocument) return
@@ -52,12 +52,8 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
 
       await renderTask.promise
       setLoading(false)
-    } catch (error: any) {
-      if (error?.name === "RenderingCancelledException") {
-        console.log("Rendering cancelled.")
-      } else {
+    } catch (error) {
         console.error("Render error:", error)
-      }
       setLoading(false)
     }
   }
