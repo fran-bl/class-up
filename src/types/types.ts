@@ -1,16 +1,16 @@
 export interface Class {
     id: string;
     name: string;
-    description: string | null;
+    description: string | undefined;
     created_at: string;
 }
 
 export interface Homework {
-    id: string;
-    class_id: string;
+    id: string | undefined;
+    class_id: string | undefined;
     title: string;
-    description: string | null;
-    file_url: string | null;
-    created_at: string;
-    due_date: string | null;
+    description: string | undefined;
+    file_url: string | undefined;
+    created_at: string | undefined;
+    due_date: string | undefined;
 }

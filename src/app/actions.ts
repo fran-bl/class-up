@@ -1,5 +1,6 @@
 "use server";
 
+import { Homework } from "@/types/types";
 import { createClient } from "@/utils/supabase/server";
 
 export const getClasses = async () => {
@@ -53,5 +54,47 @@ export const getHomeworkDetails = async (homeworkId: string) => {
     } catch (error) {
         console.error("Error fetching homework details:", error);
         return null;
+    }
+}
+
+export const createHomework = async (homeworkData: Homework) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("homework")
+            .insert([homeworkData]);
+
+        if (error) {
+            throw error;
+        }
+        return data;
+    } catch (error) {
+        console.error("Error creating homework:", error);
+        return null;
+    }
+}
+
+export const uploadFile = async (file: File, title: string) => {
+    try {
+        const supabase = await createClient();
+        const ext = file.name.split(".").pop();
+
+        const { data, error } = await supabase.storage
+            .from("homework")
+            .upload(`${title}.${ext}`, file, { upsert: true });
+
+        if (error) {
+            throw error;
+        }
+        return {
+            success: true,
+            url: supabase.storage.from("homework").getPublicUrl(data?.path).data.publicUrl
+        }
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        return {
+            success: false,
+            url: undefined
+        }
     }
 }

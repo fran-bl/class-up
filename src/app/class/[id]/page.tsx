@@ -22,7 +22,8 @@ export default function ClassPage() {
         fetchHomework();
     }, [params.id]);
 
-    const handleHomeworkRedirect = (id: string) => {
+    const handleHomeworkRedirect = (id: string | undefined) => {
+        if (!id) return;
         router.push("/homework/" + id);
     }
 
