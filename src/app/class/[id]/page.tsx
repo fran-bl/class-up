@@ -1,14 +1,16 @@
 "use client";
 
-import { getHomeworkForClass } from "@/app/actions";
+import { getClass, getHomeworkForClass } from "@/app/actions";
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardFooter, CardHeader } from "@/components/ui/card";
-import { Homework } from "@/types/types";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Class, Homework } from "@/types/types";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { format, toZonedTime } from 'date-fns-tz';
 
 export default function ClassPage() {
     const [homework, setHomework] = useState<Homework[]>([]);
+    const [classDetails, setClassDetails] = useState<Class | null>(null);
     const router = useRouter();
     const params = useParams();
 
@@ -16,30 +18,73 @@ export default function ClassPage() {
         async function fetchHomework() {
             if (typeof params.id === "string") {
                 const homework = await getHomeworkForClass(params.id);
-                setHomework(homework);
+                setHomework(homework.sort((a, b) => {
+                    const dateA = new Date(a.due_date);
+                    const dateB = new Date(b.due_date);
+                    return dateA.getTime() - dateB.getTime();
+                }));
             }
         }
         fetchHomework();
     }, [params.id]);
 
+    useEffect(() => {
+        async function fetchClass() {
+            if (typeof params.id === "string") {
+                const classDetails = await getClass(params.id);
+                setClassDetails(classDetails);
+            }
+        }
+        fetchClass();
+    }, [params.id]);
+
     const handleHomeworkRedirect = (id: string | undefined) => {
         if (!id) return;
-        router.push("/homework/" + id);
+        router.push(`/homework/${id}`);
+    }
+
+    function getDueDateColor(dueDate: string) {
+        const now = new Date();
+        const due = new Date(dueDate);
+        const diffMs = due.getTime() - now.getTime();
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+        if (diffDays < 0) return "text-red-600";
+        if (diffDays < 1) return "text-orange-500";
+        if (diffDays < 3) return "text-yellow-500";
+        return "text-green-600";
+    }
+
+    function getFormattedDate(dateString: string) {
+        const date = new Date(dateString);
+        const timeZone = 'Europe/Berlin';
+
+        const zonedDate = toZonedTime(date, timeZone);
+        return format(zonedDate, "dd.MM.yyyy'. at 'HH:mm", { timeZone });
     }
 
     return (
-        <div>
-            <h1>Class {params.id}</h1>
-            <p>Details about class {params.id}.</p>
-            {homework.map((hw) => (
-                <Card key={hw.id}>
-                    <CardHeader>{hw.title}</CardHeader>
-                    <CardDescription>{hw.description}</CardDescription>
-                    <CardFooter>
-                        <Button onClick={() => handleHomeworkRedirect(hw.id)}>Details</Button>
-                    </CardFooter>
-                </Card>
-            ))}
-        </div>
+        <>
+            <h1 className="text-4xl text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>{classDetails?.name}</h1>
+            <p className="text-2xl text-center text-stone-600 mb-4">{classDetails?.description}</p>
+            <div className="flex flex-col items-center justify-center mt-32 gap-4">
+                {homework.map((hw) => (
+                    <Card key={hw.id} className="w-1/2">
+                        <CardHeader className="grid grid-cols-2">
+                            <CardTitle className="text-xl">{hw.title}</CardTitle>
+                            <CardDescription className="text-right">
+                                {hw.due_date && <p className={`text-2xl ${getDueDateColor(hw.due_date)}`}>{getFormattedDate(hw.due_date)}</p>}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <CardDescription className="text-center text-lg">{hw.description}</CardDescription>
+                        </CardContent>
+                        <CardFooter className="justify-center">
+                            <Button onClick={() => handleHomeworkRedirect(hw.id)} className="text-xl cursor-pointer">Details</Button>
+                        </CardFooter>
+                    </Card>
+                ))}
+            </div>
+        </>
     );
 }

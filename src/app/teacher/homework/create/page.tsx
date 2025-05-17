@@ -99,12 +99,12 @@ export default function CreateHomework() {
     };
 
     return (
-        <div>
-            <h1>Teacher create homework</h1>
-            <form onSubmit={handleSumbit}>
+        <div className="flex flex-col items-center justify-center gap-4">
+            <h1 className="text-4xl text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>Create homework</h1>
+            <form onSubmit={handleSumbit} className="w-1/2 flex flex-col">
                 <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="title" className="text-right">Title</Label>
+                    <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
+                        <Label htmlFor="title" className="text-right text-xl">Title</Label>
                         <div className="col-span-3">
                             <Input
                                 id="title"
@@ -112,11 +112,13 @@ export default function CreateHomework() {
                                 onChange={handleInputChange}
                                 placeholder="Title"
                             />
-                            {errors.title && <p className="text-red-500">{errors.title}</p>}
+                            <p className={`text-red-500 min-h-[1.5rem] transition-opacity duration-200 ${errors.title ? "opacity-100" : "opacity-0"}`}>
+                                {errors.title || " "}
+                            </p>
                         </div>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="description" className="text-right">Description</Label>
+                    <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
+                        <Label htmlFor="description" className="text-right text-xl">Description</Label>
                         <div className="col-span-3">
                             <Input
                                 id="description"
@@ -126,8 +128,8 @@ export default function CreateHomework() {
                             />
                         </div>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="class_id" className="text-right">Class</Label>
+                    <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
+                        <Label htmlFor="class_id" className="text-right text-xl">Class</Label>
                         <div className="col-span-3">
                             <Select
                                 value={hw.class_id}
@@ -147,11 +149,13 @@ export default function CreateHomework() {
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
-                            {errors.class_id && <p className="text-red-500">{errors.class_id}</p>}
+                            <p className={`text-red-500 min-h-[1.5rem] transition-opacity duration-200 ${errors.class_id ? "opacity-100" : "opacity-0"}`}>
+                                {errors.class_id || " "}
+                            </p>
                         </div>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">File</Label>
+                    <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
+                        <Label className="text-right text-xl">File</Label>
                         <div className="col-span-3">
                             <FileInput
                                 id="file"
@@ -160,15 +164,17 @@ export default function CreateHomework() {
                             />
                         </div>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Due date</Label>
+                    <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
+                        <Label className="text-right text-xl">Due date</Label>
                         <div className="col-span-3">
-                            <DateTimePicker value={undefined} onChange={handleDateChange}/>
-                            {errors.due_date && <p className="text-red-500">{errors.due_date}</p>}
+                            <DateTimePicker value={undefined} onChange={handleDateChange} />
+                            <p className={`text-red-500 min-h-[1.5rem] transition-opacity duration-200 ${errors.due_date ? "opacity-100" : "opacity-0"}`}>
+                                {errors.due_date || " "}
+                            </p>
                         </div>
                     </div>
                 </div>
-                <Button type="submit">Submit</Button>
+                <Button type="submit" className="text-xl cursor-pointer mr-64 ml-64">Submit</Button>
             </form>
         </div>
     );

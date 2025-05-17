@@ -1,22 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/utils/ThemeProvider";
 import ToastProvider from "@/utils/ToastProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
   title: "ClassUp",
 };
+
+const GTAArtDecoMedium = localFont({
+  src: '../fonts/GTA Art Deco - Medium.ttf',
+  variable: '--font-gta-medium',
+  display: 'swap',
+});
+
+const GTAArtDecoRegular = localFont({
+  src: '../fonts/GTA Art Deco - Regular.ttf',
+  variable: '--font-gta-regular',
+  display: 'swap',
+});
 
 export default function RootLayout({
   children,
@@ -26,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${GTAArtDecoMedium.variable} ${GTAArtDecoRegular.variable} antialiased`}
       >
         <ToastProvider>
           <ThemeProvider

@@ -20,6 +20,25 @@ export const getClasses = async () => {
     }
 }
 
+export const getClass = async (classId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data: classDetails, error } = await supabase
+            .from("classes")
+            .select("*")
+            .eq("id", classId)
+            .single();
+
+        if (error) {
+            throw error;
+        }
+        return classDetails;
+    } catch (error) {
+        console.error("Error fetching class name:", error);
+        return null;
+    }
+}
+
 export const getHomeworkForClass = async (classId: string) => {
     try {
         const supabase = await createClient();

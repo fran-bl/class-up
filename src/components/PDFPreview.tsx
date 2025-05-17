@@ -143,7 +143,7 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
 
       <CardContent className="p-0">
         <div className="flex justify-center p-4 bg-muted/20 overflow-auto">
-          <div className={`relative ${loading ? "opacity-50" : ""}`}>
+          <div className={`relative ${loading ? "opacity-50" : ""} h-[96vh] w-[56vw] overflow-auto`}>
             <canvas ref={canvasRef} className="shadow-md" />
             {loading && (
               <div className="absolute inset-0 flex items-center justify-center">

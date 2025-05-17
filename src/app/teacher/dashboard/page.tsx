@@ -11,10 +11,9 @@ export default function TeacherDashboard() {
     }
 
     return (
-        <div>
-            <h1>Teacher Dashboard</h1>
-            <p>Details about the teacher dashboard.</p>
-            <Button onClick={handleCreateRedirect}>Create Homework</Button>
+        <div className="flex flex-col items-center justify-center gap-4">
+            <h1 className="text-4xl text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>Teacher Dashboard</h1>
+            <Button onClick={handleCreateRedirect} className="text-xl cursor-pointer">Create Homework</Button>
         </div>
     );
 }

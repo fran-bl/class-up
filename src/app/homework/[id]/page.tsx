@@ -21,22 +21,21 @@ export default function HomeworkPage() {
     }, [params.id]);          
 
     return (
-        <div>
-            <h1>Homework {params.id}</h1>
-            {homework ? (
-                <div>
-                    <h2>{homework.title}</h2>
-                    <p>{homework.description}</p>
-                    {homework.file_url && (
-                        <PDFPreview
-                            fileUrl={homework.file_url}
-                            fileName={homework.file_url.match(/\/([^\/?#]+)$/)?.[1]}
-                        />
-                    )}
-                </div>
-            ) : (
-                <p>Loading...</p>
-            )}
-        </div>
+        <>
+            <h1 className="text-4xl text-center m-4">Homework: <span style={{ fontFamily: 'var(--font-gta-medium)' }}>{homework?.title}</span></h1>
+            <p className="text-2xl text-center text-stone-600 mb-4">{homework?.description}</p>
+            <div className="grid justify-center mt-16">
+                {homework && (
+                    <div>
+                        {homework.file_url && homework.file_url.endsWith("pdf") && (
+                            <PDFPreview
+                                fileUrl={homework.file_url}
+                                fileName={homework.file_url.match(/\/([^\/?#]+)$/)?.[1]}
+                            />
+                        )}
+                    </div>
+                )}
+            </div>
+        </>
     );
 }
