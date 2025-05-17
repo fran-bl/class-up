@@ -81,7 +81,8 @@ export const createHomework = async (homeworkData: Homework) => {
         const supabase = await createClient();
         const { data, error } = await supabase
             .from("homework")
-            .insert([homeworkData]);
+            .insert([homeworkData])
+            .select();
 
         if (error) {
             throw error;

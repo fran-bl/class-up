@@ -1,47 +1,14 @@
-"use client";
-
 import { getClass, getHomeworkForClass } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Class, Homework } from "@/types/types";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { format, toZonedTime } from 'date-fns-tz';
+import RoleGate from "@/components/role-gate";
 
-export default function ClassPage() {
-    const [homework, setHomework] = useState<Homework[]>([]);
-    const [classDetails, setClassDetails] = useState<Class | null>(null);
-    const router = useRouter();
-    const params = useParams();
-
-    useEffect(() => {
-        async function fetchHomework() {
-            if (typeof params.id === "string") {
-                const homework = await getHomeworkForClass(params.id);
-                setHomework(homework.sort((a, b) => {
-                    const dateA = new Date(a.due_date);
-                    const dateB = new Date(b.due_date);
-                    return dateA.getTime() - dateB.getTime();
-                }));
-            }
-        }
-        fetchHomework();
-    }, [params.id]);
-
-    useEffect(() => {
-        async function fetchClass() {
-            if (typeof params.id === "string") {
-                const classDetails = await getClass(params.id);
-                setClassDetails(classDetails);
-            }
-        }
-        fetchClass();
-    }, [params.id]);
-
-    const handleHomeworkRedirect = (id: string | undefined) => {
-        if (!id) return;
-        router.push(`/homework/${id}`);
-    }
+// @ts-expect-error Server Component
+export default async function ClassPage({ params }) {
+    const { id } = await params;
+    const classDetails = await getClass(id);
+    const homework = await getHomeworkForClass(id);
 
     function getDueDateColor(dueDate: string) {
         const now = new Date();
@@ -64,7 +31,7 @@ export default function ClassPage() {
     }
 
     return (
-        <>
+        <RoleGate allowedRoles={["admin", "student"]}>
             <h1 className="text-4xl text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>{classDetails?.name}</h1>
             <p className="text-2xl text-center text-stone-600 mb-4">{classDetails?.description}</p>
             <div className="flex flex-col items-center justify-center mt-32 gap-4">
@@ -80,11 +47,13 @@ export default function ClassPage() {
                             <CardDescription className="text-center text-lg">{hw.description}</CardDescription>
                         </CardContent>
                         <CardFooter className="justify-center">
-                            <Button onClick={() => handleHomeworkRedirect(hw.id)} className="text-xl cursor-pointer">Details</Button>
+                            <a href={`/homework/${hw.id}`}>
+                                <Button className="text-xl cursor-pointer">Details</Button>
+                            </a>
                         </CardFooter>
                     </Card>
                 ))}
             </div>
-        </>
+        </RoleGate>
     );
 }

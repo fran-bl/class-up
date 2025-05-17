@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ThemeProvider } from "@/utils/ThemeProvider";
-import ToastProvider from "@/utils/ToastProvider";
+import { ThemeProvider } from "@/utils/theme-provider";
+import ToastProvider from "@/utils/toast-provider";
+import FloatingAvatar from "@/components/floating-avatar";
 
 export const metadata: Metadata = {
   title: "ClassUp",
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body
         className={`${GTAArtDecoMedium.variable} ${GTAArtDecoRegular.variable} antialiased`}
       >
+        <FloatingAvatar />
         <ToastProvider>
           <ThemeProvider
             attribute="class"
