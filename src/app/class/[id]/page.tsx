@@ -9,6 +9,9 @@ export default async function ClassPage({ params }) {
     const { id } = await params;
     const classDetails = await getClass(id);
     const homework = await getHomeworkForClass(id);
+    const sorted = homework.sort((a, b) => 
+        new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
+    );
 
     function getDueDateColor(dueDate: string) {
         const now = new Date();
@@ -35,7 +38,7 @@ export default async function ClassPage({ params }) {
             <h1 className="text-4xl text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>{classDetails?.name}</h1>
             <p className="text-2xl text-center text-stone-600 mb-4">{classDetails?.description}</p>
             <div className="flex flex-col items-center justify-center mt-32 gap-4">
-                {homework.map((hw) => (
+                {sorted.map((hw) => (
                     <Card key={hw.id} className="w-1/2">
                         <CardHeader className="grid grid-cols-2">
                             <CardTitle className="text-xl">{hw.title}</CardTitle>
