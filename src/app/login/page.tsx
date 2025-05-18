@@ -7,10 +7,12 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
 import { toast } from "react-toastify"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [formType, setFormType] = useState<"login" | "signup">("login")
+  const router = useRouter()
 
   async function handleLogin(formData: FormData) {
     setIsLoading(true)
@@ -19,10 +21,12 @@ export default function LoginPage() {
       if (!result.success) {
         toast.error("Login failed: " + result.error)
       } else {
-        toast.success("Login successful! Redirecting to dashboard...")
-        if (result.redirectTo) {
-          window.location.href = result.redirectTo
-        }
+        toast.success("Login successful!", { autoClose: 2000 })
+        setTimeout(() => {
+          if (result.redirectTo) {
+            router.push(result.redirectTo)
+          }
+        }, 1000)
       }
     } catch (error) {
       toast.error("An unexpected error occurred: " + error)
@@ -38,10 +42,12 @@ export default function LoginPage() {
       if (!result.success) {
         toast.error("Signup failed: " + result.error)
       } else {
-        toast.success("Signup successful! Redirecting to dashboard...")
-        if (result.redirectTo) {
-          window.location.href = result.redirectTo
-        }
+        toast.success("Signup successful!", { autoClose: 2000 })
+        setTimeout(() => {
+          if (result.redirectTo) {
+            router.push(result.redirectTo)
+          }
+        }, 1000)
       }
     } catch (error) {
       toast.error("An unexpected error occurred: " + error)

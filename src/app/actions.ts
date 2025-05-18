@@ -27,7 +27,7 @@ export const getClass = async (classId: string) => {
             .from("classes")
             .select("*")
             .eq("id", classId)
-            .single();
+            .maybeSingle();
 
         if (error) {
             throw error;
@@ -64,7 +64,7 @@ export const getHomeworkDetails = async (homeworkId: string) => {
             .from("homework")
             .select("*")
             .eq("id", homeworkId)
-            .single();
+            .maybeSingle();
 
         if (error) {
             throw error;

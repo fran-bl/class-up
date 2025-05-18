@@ -1,12 +1,17 @@
 "use server"
 
 import { createClient } from "@/utils/supabase/server"
+import { jwtDecode } from "jwt-decode"
 import { revalidatePath } from "next/cache"
 
 type AuthResult = {
     success?: boolean
     error?: string
     redirectTo?: string
+}
+
+type DecodedJWT = {
+  user_role: string;
 }
 
 export async function login(formData: FormData): Promise<AuthResult> {
@@ -19,7 +24,7 @@ export async function login(formData: FormData): Promise<AuthResult> {
         password: formData.get("password") as string,
     }
 
-    const { error } = await supabase.auth.signInWithPassword(data)
+    const { data: sessionData, error } = await supabase.auth.signInWithPassword(data)
 
     if (error) {
         return {
@@ -28,10 +33,36 @@ export async function login(formData: FormData): Promise<AuthResult> {
         }
     }
 
+    const accessToken = sessionData?.session?.access_token
+    if (!accessToken) {
+        return {
+            success: false,
+            error: "No access token found",
+        }
+    }
+
+    let userRole = "student"
+    try {
+        const decoded = jwtDecode<DecodedJWT>(accessToken)
+        userRole = decoded.user_role ?? "student"
+    } catch (error) {
+        return {
+            success: false,
+            error: "Failed to decode JWT: " + error,
+        }
+    }
+
+    let redirectTo = "/dashboard"
+    if (userRole === "admin") {
+        redirectTo = "/admin/dashboard"
+    } else if (userRole === "teacher") {
+        redirectTo = "/teacher/dashboard"
+    }
+
     revalidatePath("/", "layout")
     return {
         success: true,
-        redirectTo: "/dashboard",
+        redirectTo: redirectTo,
     }
 }
 
@@ -57,10 +88,9 @@ export async function signup(formData: FormData): Promise<AuthResult> {
     revalidatePath("/", "layout")
     return {
         success: true,
-        redirectTo: "/dashboard",
+        redirectTo: "/login",
     }
 }
-
 
 export async function logout(): Promise<AuthResult> {
     const supabase = await createClient()
