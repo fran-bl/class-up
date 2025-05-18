@@ -1,10 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { getClasses } from "../actions";
+import { getClassesStudent } from "../actions";
 import RoleGate from "@/components/role-gate";
+import { Class } from "@/types/types";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
 export default async function Dashboard() {
-    const classes = await getClasses();
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+        redirect("/login");
+    }
+
+    const classes: Class[] = (await getClassesStudent()).flat();
 
     return (
         <RoleGate allowedRoles={["admin", "student"]}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { createHomework, getClasses, uploadFile } from "@/app/actions";
+import { createHomework, getClassesTeacher, uploadFile } from "@/app/actions";
 import { DateTimePicker } from "@/components/datetime-picker";
 import { FileInput } from "@/components/file-input";
 import RoleGate from "@/components/role-gate";
@@ -28,7 +28,7 @@ export default function CreateHomework() {
 
     useEffect(() => {
         async function fetchClasses() {
-            const classes = await getClasses();
+            const classes = await getClassesTeacher();
             setClasses(classes);
         }
         fetchClasses();

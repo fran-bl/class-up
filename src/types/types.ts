@@ -1,5 +1,6 @@
 export interface Class {
     id: string;
+    teacher_id: string;
     name: string;
     description: string | undefined;
     created_at: string;

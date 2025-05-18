@@ -42,7 +42,7 @@ export default function LoginPage() {
       if (!result.success) {
         toast.error("Signup failed: " + result.error)
       } else {
-        toast.success("Signup successful!", { autoClose: 2000 })
+        toast.success("Signup successful! Please verify your e-mail.", { autoClose: 2000 })
         setTimeout(() => {
           if (result.redirectTo) {
             router.push(result.redirectTo)

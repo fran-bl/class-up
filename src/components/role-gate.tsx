@@ -26,7 +26,6 @@ export default function RoleGate({ allowedRoles, children }: RoleGateProps) {
 
       if (!session) {
         redirect('/login');
-        return;
       }
 
       const jwt = jwtDecode<DecodedJWT>(session.access_token);
@@ -34,14 +33,13 @@ export default function RoleGate({ allowedRoles, children }: RoleGateProps) {
 
       if (!allowedRoles.includes(userRole)) {
         redirect('/unauthorized');
-        return;
       }
 
       setIsAuthorized(true);
     };
 
     checkAuth();
-  }, []);
+  }, [allowedRoles]);
 
   if (isAuthorized === null) {
     return null;

@@ -57,7 +57,7 @@ export function useCurrentUserName() {
       clearInterval(intervalId)
       window.removeEventListener("focus", handleFocus)
     }
-  }, [])
+  }, [supabase.auth])
 
   return name
 }

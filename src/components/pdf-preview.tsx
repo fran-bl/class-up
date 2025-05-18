@@ -89,7 +89,7 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
         renderTaskRef.current.cancel()
       }
     }
-  }, [fileUrl])
+  }, [fileUrl, currentPage, scale])
 
   useEffect(() => {
     if (pdfDocument) {
