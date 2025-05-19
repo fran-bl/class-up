@@ -1,9 +1,9 @@
 export interface Class {
-    id: string;
-    teacher_id: string;
+    id: string | undefined;
+    teacher_id: string | undefined;
     name: string;
     description: string | undefined;
-    created_at: string;
+    created_at: string | undefined;
 }
 
 export interface Homework {

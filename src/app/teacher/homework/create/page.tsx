@@ -71,7 +71,7 @@ export default function CreateHomework() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!validateForm()) {
             return;
@@ -108,7 +108,7 @@ export default function CreateHomework() {
         <RoleGate allowedRoles={["admin", "teacher"]}>
             <div className="flex flex-col items-center justify-center gap-4">
                 <h1 className="text-4xl text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>Create homework</h1>
-                <form onSubmit={handleSumbit} className="w-1/2 flex flex-col">
+                <form onSubmit={handleSubmit} className="w-1/2 flex flex-col">
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
                             <Label htmlFor="title" className="text-right text-xl">Title</Label>
@@ -149,7 +149,7 @@ export default function CreateHomework() {
                                         <SelectGroup>
                                             <SelectLabel>Classes</SelectLabel>
                                             {classes.map((classItem) => (
-                                                <SelectItem key={classItem.id} value={classItem.id}>
+                                                <SelectItem key={classItem.id} value={classItem.id || ""}>
                                                     {classItem.name}
                                                 </SelectItem>
                                             ))}

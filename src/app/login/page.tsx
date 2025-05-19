@@ -79,7 +79,7 @@ export default function LoginPage() {
 
         <form className="flex flex-col gap-4" action={formType === "login" ? handleLogin : handleSignup}>
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-lg">Email</Label>
+            <Label htmlFor="email" className="text-lg">E-mail</Label>
             <Input id="email" name="email" type="email" placeholder="example@email.com" required />
           </div>
 

@@ -1,9 +1,18 @@
 import { getHomeworkDetails } from "@/app/actions";
 import PDFPreview from "@/components/pdf-preview";
 import RoleGate from "@/components/role-gate";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
 // @ts-expect-error Server Component
 export default async function HomeworkPage({ params }) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        redirect("/login");
+    }
+
     const { id } = await params;
     const homework = await getHomeworkDetails(id);
 

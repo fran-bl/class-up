@@ -8,7 +8,7 @@ export const getClassesStudent = async () => {
     try {
         const supabase = await createClient();
         const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
+
         if (userError || !user) {
             console.error("Error fetching user:", userError);
             return [];
@@ -40,7 +40,7 @@ export const getClassesTeacher = async () => {
     try {
         const supabase = await createClient();
         const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
+
         if (userError || !user) {
             console.error("Error fetching user:", userError);
             return [];
@@ -64,11 +64,11 @@ export const getClassesTeacher = async () => {
     }
 }
 
-export const getClass = async (classId: string) => {
+export const getClassDetailsStudent = async (classId: string) => {
     try {
         const supabase = await createClient();
         const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
+
         if (userError || !user) {
             console.error("Error fetching user:", userError);
             return null;
@@ -96,6 +96,26 @@ export const getClass = async (classId: string) => {
     }
 }
 
+export const getClassDetailsTeacher = async (classId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("classes")
+            .select("*")
+            .eq("id", classId)
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        return data as Class;
+    } catch (error) {
+        console.error("Error fetching class:", error);
+        return null;
+    }
+}
+
 export const getHomeworkForClass = async (classId: string) => {
     try {
         const supabase = await createClient();
@@ -118,7 +138,7 @@ export const getHomeworkDetails = async (homeworkId: string) => {
     try {
         const supabase = await createClient();
         const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
+
         if (userError || !user) {
             console.error("Error fetching user:", userError);
             return null;
@@ -171,6 +191,100 @@ export const createHomework = async (homeworkData: Homework) => {
     } catch (error) {
         console.error("Error creating homework:", error);
         return null;
+    }
+}
+
+export const createClass = async (classData: Class) => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return null;
+        }
+
+        const userId = user.id;
+        classData.teacher_id = userId;
+
+        const { data, error } = await supabase
+            .from("classes")
+            .insert([classData])
+            .select();
+
+        if (error) {
+            throw error;
+        }
+        return data;
+    } catch (error) {
+        console.error("Error creating class:", error);
+        return null;
+    }
+}
+
+export const addStudentToClass = async (classId: string | undefined, studentEmail: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase.rpc("get_user_id_by_email", { email: studentEmail });
+
+        if (error || !data || data.length === 0) {
+            console.error("Student not found");
+            return null;
+        }
+
+        const studentId = data[0].id;
+
+        console.log("Student ID:", studentId);
+
+        const { data: student, error: studentError } = await supabase
+            .from("user_roles")
+            .select("id")
+            .eq("user_id", studentId)
+            .eq("role", "student")
+            .single();
+        
+        if (studentError || !student) {
+            console.error("User is not a student");
+            return null;
+        }
+
+        const { data: id, error: insertError } = await supabase
+            .from("student_class")
+            .upsert({
+                student_id: studentId,
+                class_id: classId
+            })
+            .select();
+
+
+        if (insertError) {
+            throw insertError;
+        }
+        return id;
+    } catch (error) {
+        console.error("Error adding student to class:", error);
+        return null;
+    }
+}
+
+export const getStudentsInClass = async (classId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("students_in_class")
+            .select("email")
+            .eq("class_id", classId);
+
+        if (error) {
+            throw error;
+        }
+
+        const students = data.map((item) => item.email);
+        return students;
+    }
+    catch (error) {
+        console.error("Error fetching students in class:", error);
+        return [];
     }
 }
 

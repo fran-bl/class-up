@@ -1,15 +1,24 @@
-import { getClass, getHomeworkForClass } from "@/app/actions";
+import { getClassDetailsStudent, getHomeworkForClass } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { format, toZonedTime } from 'date-fns-tz';
 import RoleGate from "@/components/role-gate";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
 // @ts-expect-error Server Component
 export default async function ClassPage({ params }) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        redirect("/login");
+    }
+    
     const { id } = await params;
-    const classDetails = await getClass(id);
+    const classDetails = await getClassDetailsStudent(id);
     const homework = await getHomeworkForClass(id);
-    const sorted = homework.sort((a, b) => 
+    const sorted = homework.sort((a, b) =>
         new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
     );
 
