@@ -1,9 +1,10 @@
+import FloatingAvatar from "@/components/floating-avatar";
+import ThemeSwitcher from "@/components/theme-switcher";
+import { ThemeProvider } from "@/utils/theme-provider";
+import ToastProvider from "@/utils/toast-provider";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ThemeProvider } from "@/utils/theme-provider";
-import ToastProvider from "@/utils/toast-provider";
-import FloatingAvatar from "@/components/floating-avatar";
 
 export const metadata: Metadata = {
   title: "ClassUp",
@@ -28,6 +29,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+      </head>
       <body
         className={`${GTAArtDecoMedium.variable} ${GTAArtDecoRegular.variable} antialiased`}
       >
@@ -39,6 +43,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <ThemeSwitcher />
             {children}
           </ThemeProvider>
         </ToastProvider>

@@ -1,18 +1,32 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { login, signup } from "./actions"
-import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Loader2 } from "lucide-react"
-import { toast } from "react-toastify"
+import { useTheme } from "next-themes"
 import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
+import { login, signup } from "./actions"
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [formType, setFormType] = useState<"login" | "signup">("login")
   const router = useRouter()
+  const [mounted, setMounted] = useState(false);
+  const { theme, resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const currentTheme = theme === "system" ? resolvedTheme : theme;
+  const logoSrc = currentTheme === 'dark' 
+    ? '/images/logo-c-dark.png' 
+    : '/images/logo-c-light.png';
 
   async function handleLogin(formData: FormData) {
     setIsLoading(true)
@@ -59,7 +73,16 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
       <h1 className="text-4xl font-bold mb-4">
-        Welcome to <span style={{ fontFamily: "var(--font-gta-medium)" }}>ClassUp</span>!
+        Welcome to <span style={{ fontFamily: "var(--font-gta-medium)", alignItems: "center" }}>
+          <img
+            src={logoSrc}
+            alt="C"
+            className="w-20 h-20 inline-block mb-12 -mr-6"
+            style={{ objectFit: "contain" }}
+          />
+          lassUp
+        </span>
+        !
       </h1>
       <div className="w-full max-w-md p-6 rounded-lg shadow-md">
         <div className="flex justify-center mb-6 border-b">

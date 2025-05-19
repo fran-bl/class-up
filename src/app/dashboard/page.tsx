@@ -1,15 +1,15 @@
+import RoleGate from "@/components/role-gate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { getClassesStudent } from "../actions";
-import RoleGate from "@/components/role-gate";
 import { Class } from "@/types/types";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { getClassesStudent } from "../actions";
 
 export default async function Dashboard() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
         redirect("/login");
     }
@@ -18,7 +18,26 @@ export default async function Dashboard() {
 
     return (
         <RoleGate allowedRoles={["admin", "student"]}>
-            <h1 className="text-4xl text-center m-4">Welcome to <span style={{ fontFamily: 'var(--font-gta-medium)' }}>ClassUp</span>!</h1>
+            <h1 className="text-4xl text-center m-4">
+                Welcome to{" "}
+                <span
+                    className="inline-flex items-center font-medium"
+                    style={{ fontFamily: "var(--font-gta-medium)" }}
+                >
+                    <img
+                        src="/images/logo-c-light.png"
+                        alt="C"
+                        className="w-20 h-20 inline-block mb-12 -mr-6 dark:hidden"
+                    />
+                    <img
+                        src="/images/logo-c-dark.png"
+                        alt="C"
+                        className="w-20 h-20 mb-12 -mr-6 hidden dark:inline-block"
+                    />
+                    lassUp
+                </span>
+                !
+            </h1>
             <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4 place-items-stretch p-46">
                 {classes?.map(c => (
                     <Card key={c.id}>
