@@ -2,6 +2,7 @@
 
 import { Class, Homework } from "@/types/types";
 import { createClient } from "@/utils/supabase/server";
+import { format, toZonedTime } from "date-fns-tz";
 import { redirect } from "next/navigation";
 
 export const getClassesStudent = async () => {
@@ -233,15 +234,13 @@ export const addStudentToClass = async (classId: string | undefined, studentEmai
 
         const studentId = data[0].id;
 
-        console.log("Student ID:", studentId);
-
         const { data: student, error: studentError } = await supabase
             .from("user_roles")
             .select("id")
             .eq("user_id", studentId)
             .eq("role", "student")
             .single();
-        
+
         if (studentError || !student) {
             console.error("User is not a student");
             return null;
@@ -316,7 +315,7 @@ export const getStudentsInClass = async (classId: string) => {
     }
 }
 
-export const makeSubmission = async (homeworkId: string, fileUrl: string) => {
+export const makeSubmission = async (homeworkId: string, classId: string, fileUrl: string) => {
     try {
         const supabase = await createClient();
         const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -334,6 +333,7 @@ export const makeSubmission = async (homeworkId: string, fileUrl: string) => {
                 homework_id: homeworkId,
                 student_id: userId,
                 file_url: fileUrl,
+                class_id: classId,
                 submitted_at: new Date().toISOString()
             }, { onConflict: "homework_id,student_id" })
             .select();
@@ -374,6 +374,44 @@ export const getSubmission = async (homeworkId: string) => {
     } catch (error) {
         console.error("Error fetching submission:", error);
         return null;
+    }
+}
+
+export const gradeHomework = async (homeworkId: string, studentId: string, grade: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("homework_submission")
+            .update({ graded: true, grade })
+            .eq("homework_id", homeworkId)
+            .eq("student_id", studentId)
+            .select();
+
+        if (error) {
+            throw error;
+        }
+        return data;
+    } catch (error) {
+        console.error("Error grading homework:", error);
+        return null;
+    }
+}
+
+export const getSubmissionsForHomework = async (homeworkId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("homework_submissions_expanded")
+            .select("*")
+            .eq("homework_id", homeworkId);
+
+        if (error) {
+            throw error;
+        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching submissions:", error);
+        return [];
     }
 }
 
@@ -436,4 +474,12 @@ export const uploadSubmissionFile = async (file: File, hwId: string) => {
             url: undefined
         }
     }
+}
+
+export const getFormattedDate = async(dateString: string) => {
+    const date = new Date(dateString);
+    const timeZone = 'Europe/Berlin';
+
+    const zonedDate = toZonedTime(date, timeZone);
+    return format(zonedDate, "dd.MM.yyyy'. at 'HH:mm", { timeZone });
 }

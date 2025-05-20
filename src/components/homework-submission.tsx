@@ -1,7 +1,7 @@
 "use client";
 
-import { getSubmission, makeSubmission, uploadSubmissionFile } from "@/app/actions";
-import { format, toZonedTime } from "date-fns-tz";
+import { getFormattedDate, getSubmission, makeSubmission, uploadSubmissionFile } from "@/app/actions";
+import { Homework } from "@/types/types";
 import { Check, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -9,30 +9,28 @@ import { toast } from "react-toastify";
 import { FileInput } from "./file-input";
 import { Button } from "./ui/button";
 
-export default function HomeworkSubmission({ hwId }: { hwId: string }) {
+export default function HomeworkSubmission({ homework }: { homework: Homework }) {
     const [file, setFile] = useState<File | null>(null);
     const [submittedDate, setSubmittedDate] = useState<string | null>(null);
     const [graded, setGraded] = useState<boolean>(false);
+    const [grade, setGrade] = useState<string | null>(null);
     const router = useRouter();
-
-    function getFormattedDate(dateString: string) {
-        const date = new Date(dateString);
-        const timeZone = 'Europe/Berlin';
-
-        const zonedDate = toZonedTime(date, timeZone);
-        return format(zonedDate, "dd.MM.yyyy'. at 'HH:mm", { timeZone });
-    }
 
     useEffect(() => {
         const checkSubmissionStatus = async () => {
-            const data = await getSubmission(hwId);
+            if (!homework.id) {
+                toast.error("Homework ID is missing.");
+                return;
+            }
+            const data = await getSubmission(homework.id);
             if (data) {
-                setSubmittedDate(getFormattedDate(data.submitted_at));
+                setSubmittedDate(await getFormattedDate(data.submitted_at));
                 setGraded(data.graded);
+                setGrade(data.grade);
             }
         }
         checkSubmissionStatus();
-    }, [hwId]);
+    }, []);
 
     const handleUploadFile = async () => {
         if (!file) {
@@ -40,9 +38,14 @@ export default function HomeworkSubmission({ hwId }: { hwId: string }) {
             return;
         }
 
-        const uploadRes = await uploadSubmissionFile(file, hwId);
+        if (!homework.id || !homework.class_id) {
+            toast.error("Homework data is missing.");
+            return;
+        }
+
+        const uploadRes = await uploadSubmissionFile(file, homework.id);
         if (uploadRes.success && uploadRes.url) {
-            const submitRes = await makeSubmission(hwId, uploadRes.url);
+            const submitRes = await makeSubmission(homework.id, homework.class_id, uploadRes.url);
 
             if (submitRes) {
                 toast.success("Successfully submitted homework!");
@@ -63,20 +66,28 @@ export default function HomeworkSubmission({ hwId }: { hwId: string }) {
             <div>
                 {submittedDate && (
                     <div>
-                        <p className="text-xl">Submitted on: {submittedDate}<Check className="text-green-500 inline-block h-15 w-15 ml-5" /></p>
-                        <p className="text-xl">Graded: {graded ? <Check className="text-green-500 inline-block h-15 w-15 ml-5" /> : <X className="text-red-500 inline-block h-15 w-15 ml-5" />}</p>
+                        <p className="text-xl">Submitted: {submittedDate}<Check className="text-green-500 inline-block h-15 w-15 ml-5" /></p>
+                        <div className="text-xl">Graded: {graded ?
+                            <>
+                                <Check className="text-green-500 inline-block h-15 w-15 ml-5" />
+                                <p className="inline-block text-2xl">{grade}</p>
+                            </>
+                            : <X className="text-red-500 inline-block h-15 w-15 ml-5" />}
+                        </div>
                     </div>
                 )}
             </div>
-            <div className="grid grid-cols-2 justify-center w-1/2">
-                <FileInput
-                    id="file"
-                    accept="application/pdf, image/*"
-                    onFileSelect={setFile}
-                    className="col-span-1"
-                />
-                <Button onClick={handleUploadFile} className="text-xl cursor-pointer col-span-1 w-32">Upload</Button>
-            </div>
+            {!graded && homework.due_date && new Date(homework.due_date) > new Date(Date.now()) &&
+                <div className="grid grid-cols-2 justify-center w-1/2">
+                    <FileInput
+                        id="file"
+                        accept="application/pdf, image/*"
+                        onFileSelect={setFile}
+                        className="col-span-1"
+                    />
+                    <Button onClick={handleUploadFile} className="text-xl cursor-pointer col-span-1 w-32">Upload</Button>
+                </div>
+            }
         </div>
     );
 }

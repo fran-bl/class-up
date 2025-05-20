@@ -1,8 +1,7 @@
-import { getClassDetailsStudent, getHomeworkForClass } from "@/app/actions";
+import { getClassDetailsStudent, getFormattedDate, getHomeworkForClass } from "@/app/actions";
+import RoleGate from "@/components/role-gate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { format, toZonedTime } from 'date-fns-tz';
-import RoleGate from "@/components/role-gate";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -32,14 +31,6 @@ export default async function ClassPage({ params }) {
         if (diffDays < 1) return "text-orange-500";
         if (diffDays < 3) return "text-yellow-500";
         return "text-green-600";
-    }
-
-    function getFormattedDate(dateString: string) {
-        const date = new Date(dateString);
-        const timeZone = 'Europe/Berlin';
-
-        const zonedDate = toZonedTime(date, timeZone);
-        return format(zonedDate, "dd.MM.yyyy'. at 'HH:mm", { timeZone });
     }
 
     return (
