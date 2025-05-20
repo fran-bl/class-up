@@ -25,10 +25,10 @@ export default function StudentList({ classDetails }: { classDetails: Class | nu
         fetchStudentsInClass();
     }, [classDetails]);
         
-    const handleRemoveStudent = async (studentEmail: string) => {
-        setStudents((prevStudents) => prevStudents.filter((student) => student !== studentEmail));
+    const handleRemoveStudent = async (username: string) => {
+        setStudents((prevStudents) => prevStudents.filter((student) => student !== username));
 
-        const res = await deleteStudentFromClass(classDetails?.id, studentEmail);
+        const res = await deleteStudentFromClass(classDetails?.id, username);
         if (!res) {
             toast.error("Error removing student!");
             return;

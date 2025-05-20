@@ -11,7 +11,7 @@ type AuthResult = {
 }
 
 type DecodedJWT = {
-  user_role: string;
+    user_role: string;
 }
 
 export async function login(formData: FormData): Promise<AuthResult> {
@@ -69,19 +69,59 @@ export async function login(formData: FormData): Promise<AuthResult> {
 export async function signup(formData: FormData): Promise<AuthResult> {
     const supabase = await createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
-    const data = {
-        email: formData.get("email") as string,
-        password: formData.get("password") as string,
+    const email = formData.get("email") as string
+    const password = formData.get("password") as string
+    const username = formData.get("username") as string
+
+    const { data: existingUser, error: usernameCheckError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("username", username)
+        .maybeSingle()
+
+    if (usernameCheckError) {
+        return {
+            success: false,
+            error: "Error checking username availability",
+        }
     }
 
-    const { error } = await supabase.auth.signUp(data)
+    if (existingUser) {
+        return {
+            success: false,
+            error: "Username already taken",
+        }
+    } 
+
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+    })
 
     if (error) {
         return {
             success: false,
             error: error.message,
+        }
+    }
+
+    const userId = data.user?.id
+    if (!userId) {
+        return {
+            success: false,
+            error: "User ID not found after signup.",
+        }
+    }
+
+    const { error: profileError } = await supabase.rpc("create_profile", {
+        user_id: userId,
+        username: username,
+    })
+
+    if (profileError) {
+        return {
+            success: false,
+            error: profileError.message,
         }
     }
 

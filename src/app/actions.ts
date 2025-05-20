@@ -265,17 +265,22 @@ export const addStudentToClass = async (classId: string | undefined, studentEmai
     }
 }
 
-export const deleteStudentFromClass = async (classId: string | undefined, studentEmail: string) => {
+export const deleteStudentFromClass = async (classId: string | undefined, username: string) => {
     try {
         const supabase = await createClient();
-        const { data, error } = await supabase.rpc("get_user_id_by_email", { email: studentEmail });
+        const { data, error } = await supabase
+            .from("student_class_profile")
+            .select("id")
+            .eq("username", username)
+            .eq("class_id", classId)
+            .single();
 
-        if (error || !data || data.length === 0) {
+        if (error || !data) {
             console.error("Student not found");
             return null;
         }
 
-        const studentId = data[0].id;
+        const studentId = data.id;
 
         const { data: id, error: deleteError } = await supabase
             .from("student_class")
@@ -298,15 +303,15 @@ export const getStudentsInClass = async (classId: string) => {
     try {
         const supabase = await createClient();
         const { data, error } = await supabase
-            .from("students_in_class")
-            .select("email")
+            .from("student_class_profile")
+            .select("username")
             .eq("class_id", classId);
 
         if (error) {
             throw error;
         }
 
-        const students = data.map((item) => item.email);
+        const students = data.map((item) => item.username);
         return students;
     }
     catch (error) {

@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { createClient } from "@/utils/supabase/client"
+import { useEffect, useState } from "react"
 
 export function useCurrentUserName() {
   const [name, setName] = useState<string | null>(null)
@@ -17,12 +17,17 @@ export function useCurrentUserName() {
       }
 
       if (data?.user) {
-        if (data.user.user_metadata?.full_name) {
-          setName(data.user.user_metadata.full_name)
-        } else if (data.user.user_metadata?.name) {
-          setName(data.user.user_metadata.name)
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", data.user.id)
+          .single()
+
+        if (profileError) {
+          console.error("Error fetching user profile:", profileError)
+          setName(null)
         } else {
-          setName(data.user.email || null)
+          setName(profileData?.username || null)
         }
       } else {
         setName(null)

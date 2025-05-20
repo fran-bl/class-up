@@ -43,12 +43,15 @@ export default async function GradeHomework({ params }) {
                                 key={index}
                                 value={`item-${index}`}
                                 style={{ fontFamily: 'var(--font-gta-medium)' }}
+                                className={`rounded-md mb-1 border-t-2 ${submission.graded ? "border-green-500" : "border-red-500"}`}
                             >
-                                <AccordionTrigger className="grid grid-cols-2 justify-center items-center text-center gap-5 text-xl cursor-pointer">
-                                    <div className="grid-cols-1">{submission.email}</div>
-                                    <div className="grid-cols-1">Graded: {submission.graded ? <Check className="text-green-500 inline-block w-10 h-10" /> : <X className="text-red-500 inline-block w-10 h-10" />}</div>
+                                <AccordionTrigger className="cursor-pointer">
+                                    <div className="grid grid-cols-2 justify-center items-center text-center gap-5 text-xl w-1/3">
+                                        <div className="grid-cols-1">Student: {submission.username}</div>
+                                        <div className="grid-cols-1">Graded: {submission.graded ? <Check className="text-green-500 inline-block w-10 h-10" /> : <X className="text-red-500 inline-block w-10 h-10" />}</div>
+                                    </div>
                                 </AccordionTrigger>
-                                <AccordionContent className="flex flex-col justify-center gap-4">
+                                <AccordionContent className={`flex flex-col justify-center gap-4 p-5 border-b-2 ${submission.graded ? "border-green-500" : "border-red-500"}`}>
                                     <div className="grid grid-cols-4 justify-center items-center text-center gap-5">
                                         <div className="text-lg text-left">Submitted {submission.submitted_at}</div>
                                         {new Date(submission.submitted_at).getTime() > new Date(submission.due_date).getTime() ? (
