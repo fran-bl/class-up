@@ -35,12 +35,12 @@ export default function LoginPage() {
       if (!result.success) {
         toast.error("Login failed: " + result.error)
       } else {
-        toast.success("Login successful!", { autoClose: 2000 })
+        toast.success("Login successful!")
         setTimeout(() => {
           if (result.redirectTo) {
             router.push(result.redirectTo)
           }
-        }, 1000)
+        }, 500)
       }
     } catch (error) {
       toast.error("An unexpected error occurred: " + error)
@@ -56,12 +56,12 @@ export default function LoginPage() {
       if (!result.success) {
         toast.error("Signup failed: " + result.error)
       } else {
-        toast.success("Signup successful! Please verify your e-mail.", { autoClose: 2000 })
+        toast.success("Signup successful! Please verify your e-mail.")
         setTimeout(() => {
           if (result.redirectTo) {
             router.push(result.redirectTo)
           }
-        }, 1000)
+        }, 500)
       }
     } catch (error) {
       toast.error("An unexpected error occurred: " + error)
@@ -84,7 +84,7 @@ export default function LoginPage() {
         </span>
         !
       </h1>
-      <div className="w-full max-w-md p-6 rounded-lg shadow-md">
+      <div className="w-full max-w-md p-6 rounded-lg shadow-md shadow-none">
         <div className="flex justify-center mb-6 border-b">
           <button
             onClick={() => setFormType("login")}

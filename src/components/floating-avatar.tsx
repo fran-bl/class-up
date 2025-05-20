@@ -1,7 +1,8 @@
 "use client"
 
-import { usePathname, useRouter } from "next/navigation"
+import { logout } from "@/app/login/actions"
 import { CurrentUserAvatar } from "@/components/current-user-avatar"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,11 +11,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { logout } from "@/app/login/actions"
-import { toast } from "react-toastify"
 import { useCurrentUserName } from "@/hooks/use-current-user-name"
+import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
 
 export default function FloatingAvatar() {
   const pathname = usePathname()
@@ -59,7 +59,7 @@ export default function FloatingAvatar() {
     <div className="fixed top-5 right-15 z-50 flex items-center gap-2 p-2">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="bg-transparent hover:bg-transparent w-10 h-10 rounded-full p-0 text-white cursor-pointer">
+          <Button className="bg-transparent hover:bg-transparent w-10 h-10 rounded-full text-black dark:text-white outline-2 outline-solid outline-black dark:outline-white p-0 cursor-pointer">
             <CurrentUserAvatar initials={initials} />
           </Button>
         </DropdownMenuTrigger>

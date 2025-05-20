@@ -168,7 +168,6 @@ export const getHomeworkDetails = async (homeworkId: string) => {
         if (enrollError || !enrolled) {
             throw enrollError;
         }
-
         return homework;
     } catch (error) {
         console.error("Error fetching homework details:", error);

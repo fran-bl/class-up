@@ -1,9 +1,9 @@
 import FloatingAvatar from "@/components/floating-avatar";
 import ThemeSwitcher from "@/components/theme-switcher";
 import { ThemeProvider } from "@/utils/theme-provider";
-import ToastProvider from "@/utils/toast-provider";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Slide, ToastContainer } from "react-toastify";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -36,17 +36,22 @@ export default function RootLayout({
         className={`${GTAArtDecoMedium.variable} ${GTAArtDecoRegular.variable} antialiased`}
       >
         <FloatingAvatar />
-        <ToastProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ThemeSwitcher />
-            {children}
-          </ThemeProvider>
-        </ToastProvider>
+        <ToastContainer
+          theme="colored"
+          position="top-center"
+          transition={Slide}
+          autoClose={2000}
+          draggable
+        />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ThemeSwitcher />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
