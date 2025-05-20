@@ -1,6 +1,6 @@
 "use client";
 
-import { addStudentToClass, getClassDetailsTeacher, getStudentsInClass } from "@/app/actions";
+import { addStudentToClass, deleteStudentFromClass, getClassDetailsTeacher, getStudentsInClass } from "@/app/actions";
 import RoleGate from "@/components/role-gate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,28 +18,38 @@ export default function ManageClass() {
     const [studentsLoading, setStudentsLoading] = useState<boolean>(false);
     const [studentEmail, setStudentEmail] = useState<string>("");
     const [studentError, setStudentError] = useState<string | null>(null);
-    
+
     useEffect(() => {
-            async function fetchClassDetails() {
-                if (typeof params.id === "string") {
-                    const classDetails = await getClassDetailsTeacher(params.id);
-                    setClassDetails(classDetails);
-                }
+        async function fetchClassDetails() {
+            if (typeof params.id === "string") {
+                const classDetails = await getClassDetailsTeacher(params.id);
+                setClassDetails(classDetails);
             }
+        }
 
-            async function fetchStudentsInClass() {
-                setStudentsLoading(true);
-                if (typeof params.id === "string") {
-                    const students = await getStudentsInClass(params.id);
-                    setStudents(students);
-                }
-                setStudentsLoading(false);
+        async function fetchStudentsInClass() {
+            setStudentsLoading(true);
+            if (typeof params.id === "string") {
+                const students = await getStudentsInClass(params.id);
+                setStudents(students);
             }
+            setStudentsLoading(false);
+        }
 
-            fetchClassDetails();
-            fetchStudentsInClass();
-        }, []);
+        fetchClassDetails();
+        fetchStudentsInClass();
+    }, []);
 
+    const handleRemoveStudent = async (studentEmail: string) => {
+        setStudents((prevStudents) => prevStudents.filter((student) => student !== studentEmail));
+        
+        const res = await deleteStudentFromClass(classDetails?.id, studentEmail);
+        if (!res) {
+            toast.error("Error removing student!");
+            return;
+        }
+        toast.success("Student removed successfully!");
+    }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
@@ -80,19 +90,24 @@ export default function ManageClass() {
                 <h1 className="text-4xl text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>Manage {classDetails?.name}</h1>
                 <div className="mt-16 mb-16">
                     <Label className="text-2xl">Students in this class:</Label>
-                    {studentsLoading? (
-                        <>
-                            <Skeleton className="h-8 w-64 mb-2" />
-                            <Skeleton className="h-8 w-64 mb-2" />
-                            <Skeleton className="h-8 w-64" />
-                        </>
-                    ) : students.length > 0 ? (
-                        students.map((student, index) => (
-                            <div key={index} className="text-xl">{student}</div>
-                        ))
-                    ) : (
-                        <div className="text-xl">No students in this class</div>
-                    )}
+                    <div className="grid gap-4 py-4">
+                        {studentsLoading ? (
+                            <>
+                                <Skeleton className="h-8 w-64 mb-2" />
+                                <Skeleton className="h-8 w-64 mb-2" />
+                                <Skeleton className="h-8 w-64" />
+                            </>
+                        ) : students.length > 0 ? (
+                            students.map((student, index) => (
+                                <div className="grid grid-cols-3 gap-5" key={index}>
+                                    <div key={index} className="text-xl col-span-2">{student}</div>
+                                    <Button onClick={() => handleRemoveStudent(student)} className="text-xl cursor-pointer">Remove</Button>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-xl">No students in this class</div>
+                        )}
+                    </div>
                 </div>
                 <form onSubmit={handleSubmit} className="w-1/2 flex flex-col">
                     <Label className="text-2xl">Add student to class</Label>

@@ -1,6 +1,6 @@
 "use client";
 
-import { createHomework, getClassesTeacher, uploadFile } from "@/app/actions";
+import { createHomework, getClassesTeacher, uploadHomeworkFile } from "@/app/actions";
 import { DateTimePicker } from "@/components/datetime-picker";
 import { FileInput } from "@/components/file-input";
 import RoleGate from "@/components/role-gate";
@@ -78,7 +78,7 @@ export default function CreateHomework() {
         }
 
         if (file) {
-            const uploadRes = await uploadFile(file, hw.title);
+            const uploadRes = await uploadHomeworkFile(file, hw.title);
             if (uploadRes.success) {
                 hw.file_url = uploadRes.url;
             } else {

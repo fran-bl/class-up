@@ -266,6 +266,35 @@ export const addStudentToClass = async (classId: string | undefined, studentEmai
     }
 }
 
+export const deleteStudentFromClass = async (classId: string | undefined, studentEmail: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase.rpc("get_user_id_by_email", { email: studentEmail });
+
+        if (error || !data || data.length === 0) {
+            console.error("Student not found");
+            return null;
+        }
+
+        const studentId = data[0].id;
+
+        const { data: id, error: deleteError } = await supabase
+            .from("student_class")
+            .delete()
+            .eq("student_id", studentId)
+            .eq("class_id", classId)
+            .select();
+
+        if (deleteError) {
+            throw deleteError;
+        }
+        return id;
+    } catch (error) {
+        console.error("Error deleting student from class:", error);
+        return null;
+    }
+}
+
 export const getStudentsInClass = async (classId: string) => {
     try {
         const supabase = await createClient();
@@ -287,14 +316,111 @@ export const getStudentsInClass = async (classId: string) => {
     }
 }
 
-export const uploadFile = async (file: File, title: string) => {
+export const makeSubmission = async (homeworkId: string, fileUrl: string) => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return null;
+        }
+
+        const userId = user.id;
+
+        const { data, error } = await supabase
+            .from("homework_submission")
+            .upsert({
+                homework_id: homeworkId,
+                student_id: userId,
+                file_url: fileUrl,
+                submitted_at: new Date().toISOString()
+            }, { onConflict: "homework_id,student_id" })
+            .select();
+
+        if (error) {
+            throw error;
+        }
+        return data;
+    } catch (error) {
+        console.error("Error making submission:", error);
+        return null;
+    }
+}
+
+export const getSubmission = async (homeworkId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return null;
+        }
+
+        const userId = user.id;
+
+        const { data, error } = await supabase
+            .from("homework_submission")
+            .select("*")
+            .eq("homework_id", homeworkId)
+            .eq("student_id", userId)
+            .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching submission:", error);
+        return null;
+    }
+}
+
+export const uploadHomeworkFile = async (file: File, title: string) => {
     try {
         const supabase = await createClient();
         const ext = file.name.split(".").pop();
 
         const { data, error } = await supabase.storage
             .from("homework")
-            .upload(`${title}.${ext}`, file, { upsert: true });
+            .upload(`/homework/${title}.${ext}`, file, { upsert: true });
+
+        if (error) {
+            throw error;
+        }
+        return {
+            success: true,
+            url: supabase.storage.from("homework").getPublicUrl(data?.path).data.publicUrl
+        }
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        return {
+            success: false,
+            url: undefined
+        }
+    }
+}
+
+export const uploadSubmissionFile = async (file: File, hwId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return {
+                success: false,
+                url: undefined
+            }
+        }
+
+        const userId = user.id;
+        const ext = file.name.split(".").pop();
+
+        const { data, error } = await supabase.storage
+            .from("homework")
+            .upload(`/submission/${hwId}/${userId}.${ext}`, file, { upsert: true });
 
         if (error) {
             throw error;
