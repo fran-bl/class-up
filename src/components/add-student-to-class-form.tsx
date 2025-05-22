@@ -47,12 +47,12 @@ export default function AddStudentToClassForm({ classDetails }: { classDetails: 
         router.refresh();
     }
     return (
-        <form onSubmit={handleSubmit} className="w-1/2 flex flex-col">
-            <Label className="text-2xl">Add student to class</Label>
+        <form onSubmit={handleSubmit} className="max-sm:w-full w-1/2 flex flex-col p-5">
+            <h1 className="text-2xl max-sm:text-xl text-center">Add student to class</h1>
             <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
+                <div className="grid grid-cols-4 max-sm:grid-cols-1 items-center gap-4 min-h-[4rem]">
                     <Label htmlFor="email" className="text-right text-xl">E-mail</Label>
-                    <div className="col-span-3">
+                    <div className="col-span-3 max-sm:col-span-1">
                         <Input
                             id="name"
                             onChange={handleInputChange}
@@ -65,7 +65,7 @@ export default function AddStudentToClassForm({ classDetails }: { classDetails: 
                     </div>
                 </div>
             </div>
-            <Button type="submit" className="text-xl cursor-pointer mr-64 ml-64">Add</Button>
+            <Button type="submit" className="text-xl cursor-pointer">Add</Button>
         </form>
     );
 }

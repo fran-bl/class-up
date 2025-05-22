@@ -21,8 +21,8 @@ export default function TeacherDashboard() {
 
     return (
         <RoleGate allowedRoles={["admin", "teacher"]}>
-            <div className="flex flex-col items-center justify-center gap-4">
-                <h1 className="text-4xl text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>Teacher Dashboard</h1>
+            <h1 className="text-4xl max-sm:text-2xl max-sm:mt-16 text-center m-4">Teacher Dashboard</h1>
+            <div className="grid grid-cols-3 max-sm:grid-cols-1 gap-4 p-32 max-sm:p-5">
                 <Button onClick={handleCreateHomeworkRedirect} className="text-xl cursor-pointer">Create Homework</Button>
                 <Button onClick={handleCreateClassRedirect} className="text-xl cursor-pointer">Create Class</Button>
                 <Button onClick={handleManageClass} className="text-xl cursor-pointer">Manage Classes</Button>

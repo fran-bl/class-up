@@ -5,7 +5,6 @@ import { Class } from "@/types/types";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Button } from "./ui/button";
-import { Label } from "./ui/label";
 import { Skeleton } from "./ui/skeleton";
 
 export default function StudentList({ classDetails }: { classDetails: Class | null }) {
@@ -37,9 +36,9 @@ export default function StudentList({ classDetails }: { classDetails: Class | nu
     }
 
     return (
-        <div className="mt-16 mb-16">
-            <Label className="text-2xl">Students in this class:</Label>
-            <div className="grid gap-4 py-4">
+        <div className="my-5">
+            <h1 className="text-2xl max-sm:text-xl text-center">Students in this class:</h1>
+            <div className="grid gap-4 p-5">
                 {studentsLoading ? (
                     Array.from({ length: 5 }, (_, index) => (
                         <Skeleton className="h-8" key={index} />

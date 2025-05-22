@@ -72,7 +72,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-4xl font-bold mb-4">
+      <h1 className="text-4xl max-sm:text-2xl font-bold mb-4">
         Welcome to <span style={{ fontFamily: "var(--font-gta-medium)", alignItems: "center" }}>
           <img
             src={logoSrc}

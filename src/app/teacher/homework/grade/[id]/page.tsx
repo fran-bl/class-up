@@ -36,8 +36,8 @@ export default async function GradeHomework({ params }) {
         <RoleGate allowedRoles={["admin", "teacher"]}>
             {formattedSubmissions.length > 0 ? (
                 <div className="flex flex-col items-center justify-center gap-4">
-                    <h1 className="text-4xl text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>Grade Homework</h1>
-                    <Accordion type="multiple" className="w-3/4">
+                    <h1 className="text-4xl max-sm:text-2xl text-center max-sm:mt-16 m-4">Grade Homework</h1>
+                    <Accordion type="multiple" className="w-3/4 max-sm:w-full p-5">
                         {formattedSubmissions.map((submission, index) => (
                             <AccordionItem
                                 key={index}
@@ -46,20 +46,20 @@ export default async function GradeHomework({ params }) {
                                 className={`rounded-md mb-1 border-t-2 ${submission.graded ? "border-green-500" : "border-red-500"}`}
                             >
                                 <AccordionTrigger className="cursor-pointer">
-                                    <div className="grid grid-cols-2 justify-center items-center text-center gap-5 text-xl w-1/3">
+                                    <div className="grid grid-cols-2 justify-center items-center text-center gap-5 text-xl w-1/3 max-sm:w-full">
                                         <div className="grid-cols-1">Student: {submission.username}</div>
                                         <div className="grid-cols-1">Graded: {submission.graded ? <Check className="text-green-500 inline-block w-10 h-10" /> : <X className="text-red-500 inline-block w-10 h-10" />}</div>
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent className={`flex flex-col justify-center gap-4 p-5 border-b-2 ${submission.graded ? "border-green-500" : "border-red-500"}`}>
-                                    <div className="grid grid-cols-4 justify-center items-center text-center gap-5">
-                                        <div className="text-lg text-left">Submitted {submission.submitted_at}</div>
+                                    <div className="grid grid-cols-4 max-sm:grid-cols-2 justify-center items-center text-center gap-5">
+                                        <div className="text-lg text-left">Submitted: {submission.submitted_at}</div>
                                         {new Date(submission.submitted_at).getTime() > new Date(submission.due_date).getTime() ? (
                                             <div className="text-xl text-red-500">Late</div>
                                         ) : (
                                             <div className="text-xl text-green-500">On Time</div>
                                         )}
-                                        <div className="text-xl">Grade: {submission.grade ? <p className="text-2xl">{submission.grade}</p> : "-"}</div>
+                                        <div className="text-xl">Grade: {submission.grade ? <p className="text-2xl max-sm:text-lg">{submission.grade}</p> : "-"}</div>
                                         <a href={submission.file_url} target="_blank" rel="noopener noreferrer" className="text-xl">
                                             File:{" "}
                                             <Button variant="outline" size="icon">
@@ -75,7 +75,7 @@ export default async function GradeHomework({ params }) {
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center gap-4">
-                    <h1 className="text-4xl text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>No submissions found.</h1>
+                    <h1 className="text-xl mt-16 text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>No submissions found.</h1>
                 </div>
             )}
         </RoleGate>

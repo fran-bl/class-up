@@ -56,18 +56,18 @@ export default function FloatingAvatar() {
   }
 
   return (
-    <div className="fixed top-5 right-15 z-50 flex items-center gap-2 p-2">
+    <div className="fixed right-5 top-5 z-50 flex items-center gap-2 p-2">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="bg-transparent hover:bg-transparent w-10 h-10 rounded-full text-black dark:text-white outline-2 outline-solid outline-black dark:outline-white p-0 cursor-pointer">
+          <Button className="w-10 h-10 rounded-full text-black dark:text-white outline-2 outline-solid outline-black dark:outline-white p-0 cursor-pointer">
             <CurrentUserAvatar initials={initials} />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-transparent border-none shadow-none grid grid-cols-1 justify-items-center">
+        <DropdownMenuContent className="bg-opacity-90 bg-[var(--color-background)] border-2 border-primary shadow-none grid grid-cols-1 justify-items-center">
           <DropdownMenuLabel>{name || "Guest"}</DropdownMenuLabel>
           <DropdownMenuGroup>
-            <DropdownMenuItem className="bg-transparent hover:bg-transparent cursor-pointer">
-              <button onClick={handleSignOut} className="pb-2 px-4 border-b-2 border-primary font-medium">
+            <DropdownMenuItem className="cursor-pointer">
+              <button onClick={handleSignOut} className="pb-2 px-4 border-b-2 border-primary font-medium cursor-pointer">
                 Logout
               </button>
             </DropdownMenuItem>

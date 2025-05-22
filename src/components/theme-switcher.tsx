@@ -13,7 +13,7 @@ const ThemeSwitcher = () => {
   }, []);
 
   return mount ? (
-    <div className="fixed left-5 z-[10000000000] max-lg:bottom-2.5 lg:top-7">
+    <div className="fixed left-5 top-5 z-50">
       <button
         onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
         type="button"

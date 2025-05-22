@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import type { RenderTask, PDFDocumentProxy } from "pdfjs-dist"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, ExternalLink } from "lucide-react"
+import { ChevronLeft, ChevronRight, ExternalLink, ZoomIn, ZoomOut } from "lucide-react"
+import type { PDFDocumentProxy, RenderTask } from "pdfjs-dist"
+import { useEffect, useRef, useState } from "react"
 
 interface PDFPreviewProps {
   fileUrl: string
@@ -14,7 +14,7 @@ interface PDFPreviewProps {
 export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const renderTaskRef = useRef<RenderTask | null>(null)
-  const [scale, setScale] = useState<number>(1.5)
+  const [scale, setScale] = useState<number>(1.25)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [numPages, setNumPages] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(true)
@@ -52,8 +52,7 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
 
       await renderTask.promise
       setLoading(false)
-    } catch (error) {
-        console.error("Render error:", error)
+    } catch {
       setLoading(false)
     }
   }
@@ -77,8 +76,7 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
         setNumPages(pdf.numPages)
 
         await renderPage(currentPage, scale)
-      } catch (error) {
-        console.error("Error loading PDF:", error)
+      } catch {
         setLoading(false)
       }
     })()
@@ -122,7 +120,7 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
   }
 
   return (
-    <Card className="w-full max-w-full overflow-hidden">
+    <Card className="w-full max-w-full h-200 overflow-hidden bg-[var(--background-color)] shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="text-lg font-medium">{fileName}</div>
         <div className="flex items-center space-x-2">
@@ -142,7 +140,7 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
       </div>
 
       <CardContent className="p-0">
-        <div className="flex justify-center p-4 bg-muted/20 overflow-auto">
+        <div className="flex justify-center p-4 overflow-auto">
           <div className={`relative ${loading ? "opacity-50" : ""} h-[96vh] w-[56vw] overflow-auto`}>
             <canvas ref={canvasRef} className="shadow-md" />
             {loading && (

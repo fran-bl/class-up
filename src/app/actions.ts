@@ -387,7 +387,7 @@ export const gradeHomework = async (homeworkId: string, studentId: string, grade
         const supabase = await createClient();
         const { data, error } = await supabase
             .from("homework_submission")
-            .update({ graded: true, grade })
+            .update({ graded: true, grade, graded_at: new Date().toISOString() })
             .eq("homework_id", homeworkId)
             .eq("student_id", studentId)
             .select();

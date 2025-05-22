@@ -107,12 +107,12 @@ export default function CreateHomework() {
     return (
         <RoleGate allowedRoles={["admin", "teacher"]}>
             <div className="flex flex-col items-center justify-center gap-4">
-                <h1 className="text-4xl text-center m-4" style={{ fontFamily: 'var(--font-gta-medium)' }}>Create homework</h1>
+                <h1 className="text-4xl max-sm:text-2xl text-center max-sm:mt-16 m-4">Create homework</h1>
                 <form onSubmit={handleSubmit} className="w-1/2 flex flex-col">
                     <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
+                        <div className="grid grid-cols-4 max-sm:grid-cols-1 items-center gap-4 min-h-[4rem]">
                             <Label htmlFor="title" className="text-right text-xl">Title</Label>
-                            <div className="col-span-3">
+                            <div className="col-span-3 max-sm:col-span-1">
                                 <Input
                                     id="title"
                                     value={hw.title || ""}
@@ -124,9 +124,9 @@ export default function CreateHomework() {
                                 </p>
                             </div>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
+                        <div className="grid grid-cols-4 max-sm:grid-cols-1 items-center gap-4 min-h-[4rem]">
                             <Label htmlFor="description" className="text-right text-xl">Description</Label>
-                            <div className="col-span-3">
+                            <div className="col-span-3 max-sm:col-span-1">
                                 <Input
                                     id="description"
                                     value={hw.description || ""}
@@ -135,9 +135,9 @@ export default function CreateHomework() {
                                 />
                             </div>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
+                        <div className="grid grid-cols-4 max-sm:grid-cols-1 items-center gap-4 min-h-[4rem]">
                             <Label htmlFor="class_id" className="text-right text-xl">Class</Label>
-                            <div className="col-span-3">
+                            <div className="col-span-3 max-sm:col-span-1">
                                 <Select
                                     value={hw.class_id}
                                     onValueChange={handleClassChange}
@@ -161,9 +161,9 @@ export default function CreateHomework() {
                                 </p>
                             </div>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
+                        <div className="grid grid-cols-4 max-sm:grid-cols-1 items-center gap-4 min-h-[4rem]">
                             <Label className="text-right text-xl">File</Label>
-                            <div className="col-span-3">
+                            <div className="col-span-3 max-sm:col-span-1">
                                 <FileInput
                                     id="file"
                                     accept="application/pdf, image/*"
@@ -171,9 +171,9 @@ export default function CreateHomework() {
                                 />
                             </div>
                         </div>
-                        <div className="grid grid-cols-4 items-center gap-4 min-h-[4rem]">
+                        <div className="grid grid-cols-4 max-sm:grid-cols-1 items-center gap-4 min-h-[4rem]">
                             <Label className="text-right text-xl">Due date</Label>
-                            <div className="col-span-3">
+                            <div className="col-span-3 max-sm:col-span-1">
                                 <DateTimePicker value={undefined} onChange={handleDateChange} />
                                 <p className={`text-red-500 min-h-[1.5rem] transition-opacity duration-200 ${errors.due_date ? "opacity-100" : "opacity-0"}`}>
                                     {errors.due_date || " "}
@@ -181,7 +181,7 @@ export default function CreateHomework() {
                             </div>
                         </div>
                     </div>
-                    <Button type="submit" className="text-xl cursor-pointer mr-64 ml-64">Submit</Button>
+                    <Button type="submit" className="text-xl cursor-pointer">Submit</Button>
                 </form>
             </div>
         </RoleGate>

@@ -2,7 +2,7 @@
 
 import { getFormattedDate, getSubmission, makeSubmission, uploadSubmissionFile } from "@/app/actions";
 import { Homework } from "@/types/types";
-import { Check, X } from "lucide-react";
+import { Check, ExternalLink, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -11,9 +11,11 @@ import { Button } from "./ui/button";
 
 export default function HomeworkSubmission({ homework }: { homework: Homework }) {
     const [file, setFile] = useState<File | null>(null);
+    const [submittedFile, setSubittedFile] = useState<string | null>(null);
     const [submittedDate, setSubmittedDate] = useState<string | null>(null);
     const [graded, setGraded] = useState<boolean>(false);
     const [grade, setGrade] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
     const router = useRouter();
 
     useEffect(() => {
@@ -27,6 +29,8 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
                 setSubmittedDate(await getFormattedDate(data.submitted_at));
                 setGraded(data.graded);
                 setGrade(data.grade);
+                setSubittedFile(data.file_url);
+                setLoading(false);
             }
         }
         checkSubmissionStatus();
@@ -62,22 +66,29 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
     }
 
     return (
-        <div className="flex flex-col m-16">
+        <div className="flex flex-col">
             <div>
                 {submittedDate && (
                     <div>
-                        <p className="text-xl">Submitted: {submittedDate}<Check className="text-green-500 inline-block h-15 w-15 ml-5" /></p>
-                        <div className="text-xl">Graded: {graded ?
+                        <p className="text-xl max-sm:text-sm">Submitted: {submittedDate}<Check className="text-green-500 inline-block h-15 w-15 ml-5" /></p>
+                        <div className="text-xl max-sm:text-sm">Graded: {graded ?
                             <>
-                                <Check className="text-green-500 inline-block h-15 w-15 ml-5" />
                                 <p className="inline-block text-2xl">{grade}</p>
+                                <Check className="text-green-500 inline-block h-15 w-15 ml-5" />
                             </>
                             : <X className="text-red-500 inline-block h-15 w-15 ml-5" />}
                         </div>
+                        <p></p>
+                        <a href={submittedFile ?? undefined} target="_blank" rel="noopener noreferrer" className="text-xl max-sm:text-sm">
+                            Your submission:{" "}
+                            <Button variant="outline" size="icon">
+                                <ExternalLink className="h-4 w-4" />
+                            </Button>
+                        </a>
                     </div>
                 )}
             </div>
-            {!graded && homework.due_date && new Date(homework.due_date) > new Date(Date.now()) &&
+            {!loading && !graded && homework.due_date && new Date(homework.due_date) > new Date(Date.now()) &&
                 <div className="grid grid-cols-2 justify-center w-1/2">
                     <FileInput
                         id="file"
