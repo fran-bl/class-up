@@ -78,7 +78,6 @@ export default function LoginPage() {
             src={logoSrc}
             alt="C"
             className="w-20 h-20 inline-block mb-12 -mr-6"
-            style={{ objectFit: "contain" }}
           />
           lassUp
         </span>

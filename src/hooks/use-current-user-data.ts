@@ -3,9 +3,19 @@
 import { createClient } from "@/utils/supabase/client"
 import { useEffect, useState } from "react"
 
-export function useCurrentUserName() {
+export function useCurrentUserData() {
   const [name, setName] = useState<string | null>(null)
+  const [levelData, setLevelData] = useState<number[]>([1, 0, 50])
   const supabase = createClient()
+
+  function getLevel(xp: number) {
+    if (xp < 0) xp = 0;
+
+    const level = Math.floor(Math.sqrt(xp / 50) + 1);
+    const totalXpForNextLevel = 50 * Math.pow(level, 2);
+
+    return [level, xp, totalXpForNextLevel];
+  }
 
   const fetchCurrentUser = async () => {
     try {
@@ -19,7 +29,7 @@ export function useCurrentUserName() {
       if (data?.user) {
         const { data: profileData, error: profileError } = await supabase
           .from("profiles")
-          .select("username")
+          .select("*")
           .eq("id", data.user.id)
           .single()
 
@@ -28,6 +38,7 @@ export function useCurrentUserName() {
           setName(null)
         } else {
           setName(profileData?.username || null)
+          setLevelData(getLevel(profileData.xp))
         }
       } else {
         setName(null)
@@ -64,5 +75,5 @@ export function useCurrentUserName() {
     }
   }, [supabase.auth])
 
-  return name
+  return { name, levelData }
 }

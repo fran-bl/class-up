@@ -395,6 +395,7 @@ export const gradeHomework = async (homeworkId: string, studentId: string, grade
         if (error) {
             throw error;
         }
+
         return data;
     } catch (error) {
         console.error("Error grading homework:", error);
@@ -481,7 +482,83 @@ export const uploadSubmissionFile = async (file: File, hwId: string) => {
     }
 }
 
-export const getFormattedDate = async(dateString: string) => {
+export const addXpToUser = async (xp: number) => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return null;
+        }
+
+        const userId = user.id;
+
+        const { data: profileData, error: fetchError } = await supabase
+            .from("profiles")
+            .select("xp")
+            .eq("id", userId)
+            .single();
+
+        if (fetchError || !profileData) {
+            console.error("Error fetching profile data:", fetchError);
+            return null;
+        }
+
+        const currentXP = profileData.xp || 0;
+        const newXP = currentXP + xp;
+
+        const { data: updatedData, error: updateError } = await supabase
+            .from("profiles")
+            .update({ xp: newXP })
+            .eq("id", userId)
+            .select();
+
+        if (updateError) {
+            throw updateError;
+        }
+
+        return updatedData;
+    } catch (error) {
+        console.error("Error adding XP to user:", error);
+        return null;
+    }
+};
+
+export const addXpToUserById = async (userId: string, xp: number) => {
+    try {
+        const supabase = await createClient();
+        const { data: profileData, error: fetchError } = await supabase
+            .from("profiles")
+            .select("xp")
+            .eq("id", userId)
+            .single();
+
+        if (fetchError || !profileData) {
+            console.error("Error fetching profile data:", fetchError);
+            return null;
+        }
+
+        const currentXP = profileData.xp || 0;
+        const newXP = currentXP + xp;
+
+        const { data: updatedData, error: updateError } = await supabase
+            .from("profiles")
+            .update({ xp: newXP })
+            .eq("id", userId)
+            .select();
+            
+        if (updateError) {
+            throw updateError;
+        }
+        return updatedData;
+    } catch (error) {
+        console.error("Error adding XP to user:", error);
+        return null;
+    }
+}
+
+export const getFormattedDate = async (dateString: string) => {
     const date = new Date(dateString);
     const timeZone = 'Europe/Berlin';
 

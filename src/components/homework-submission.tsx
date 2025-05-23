@@ -1,6 +1,6 @@
 "use client";
 
-import { getFormattedDate, getSubmission, makeSubmission, uploadSubmissionFile } from "@/app/actions";
+import { addXpToUser, getFormattedDate, getSubmission, makeSubmission, uploadSubmissionFile } from "@/app/actions";
 import { Homework } from "@/types/types";
 import { Check, ExternalLink, X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -30,8 +30,8 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
                 setGraded(data.graded);
                 setGrade(data.grade);
                 setSubittedFile(data.file_url);
-                setLoading(false);
             }
+            setLoading(false);
         }
         checkSubmissionStatus();
     }, []);
@@ -51,11 +51,19 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
         if (uploadRes.success && uploadRes.url) {
             const submitRes = await makeSubmission(homework.id, homework.class_id, uploadRes.url);
 
+            if (!submittedDate && homework.due_date && new Date(homework.due_date).getTime() > new Date().getTime()) {
+                const earlySubmissionXpRes = await addXpToUser(25);
+
+                if (earlySubmissionXpRes) {
+                    toast.success("You received 25 XP for submitting early!");
+                }
+            }
+
             if (submitRes) {
                 toast.success("Successfully submitted homework!");
                 setTimeout(() => {
                     router.back();
-                }, 1000);
+                }, 2000);
             } else {
                 toast.error("Error submitting homework!");
             }
@@ -88,8 +96,8 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
                     </div>
                 )}
             </div>
-            {!loading && !graded && homework.due_date && new Date(homework.due_date) > new Date(Date.now()) &&
-                <div className="grid grid-cols-2 justify-center w-1/2">
+            {!loading && !graded &&
+                <div className="grid grid-cols-2 max-sm:grid-cols-1 items-center gap-4 mt-5">
                     <FileInput
                         id="file"
                         accept="application/pdf, image/*"

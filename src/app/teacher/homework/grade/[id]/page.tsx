@@ -28,6 +28,7 @@ export default async function GradeHomework({ params }) {
     const formattedSubmissions = await Promise.all(
         sortedSubmissions.map(async (submission) => ({
             ...submission,
+            submitted_at_iso: submission.submitted_at,
             submitted_at: submission.submitted_at ? await getFormattedDate(submission.submitted_at) : "",
         }))
     );
@@ -54,7 +55,7 @@ export default async function GradeHomework({ params }) {
                                 <AccordionContent className={`flex flex-col justify-center gap-4 p-5 border-b-2 ${submission.graded ? "border-green-500" : "border-red-500"}`}>
                                     <div className="grid grid-cols-4 max-sm:grid-cols-2 justify-center items-center text-center gap-5">
                                         <div className="text-lg text-left">Submitted: {submission.submitted_at}</div>
-                                        {new Date(submission.submitted_at).getTime() > new Date(submission.due_date).getTime() ? (
+                                        {new Date(submission.submitted_at_iso).getTime() > new Date(submission.due_date).getTime() ? (
                                             <div className="text-xl text-red-500">Late</div>
                                         ) : (
                                             <div className="text-xl text-green-500">On Time</div>
