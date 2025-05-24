@@ -24,8 +24,8 @@ export default function LoginPage() {
   if (!mounted) return null;
 
   const currentTheme = theme === "system" ? resolvedTheme : theme;
-  const logoSrc = currentTheme === 'dark' 
-    ? '/images/logo-c-dark.png' 
+  const logoSrc = currentTheme === 'dark'
+    ? '/images/logo-c-dark.png'
     : '/images/logo-c-light.png';
 
   async function handleLogin(formData: FormData) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { addXpToUser, getFormattedDate, getSubmission, makeSubmission, uploadSubmissionFile } from "@/app/actions";
+import { useToast } from "@/hooks/use-toast";
 import { Homework } from "@/types/types";
 import { Check, ExternalLink, X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -8,6 +9,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FileInput } from "./file-input";
 import { Button } from "./ui/button";
+import XpToast from "./xp-toast";
 
 export default function HomeworkSubmission({ homework }: { homework: Homework }) {
     const [file, setFile] = useState<File | null>(null);
@@ -16,6 +18,7 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
     const [graded, setGraded] = useState<boolean>(false);
     const [grade, setGrade] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const { toastState, showToast, hideToast } = useToast();
     const router = useRouter();
 
     useEffect(() => {
@@ -51,11 +54,20 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
         if (uploadRes.success && uploadRes.url) {
             const submitRes = await makeSubmission(homework.id, homework.class_id, uploadRes.url);
 
-            if (!submittedDate && homework.due_date && new Date(homework.due_date).getTime() > new Date().getTime()) {
-                const earlySubmissionXpRes = await addXpToUser(25);
+            if (!submittedDate) {
+                let early = null;
+                if (homework.due_date && new Date(homework.due_date).getTime() > new Date().getTime()) {
+                    early = await addXpToUser(25);
+                }
 
-                if (earlySubmissionXpRes) {
-                    toast.success("You received 25 XP for submitting early!");
+                const submissionXpRes = await addXpToUser(50);
+
+                if (submissionXpRes) {
+                    if (early) {
+                        showToast("You submitted early! You earned bonus 25 XP!", 75);
+                    } else {
+                        showToast("You submitted your homework! You earned 50 XP!", 50);
+                    }
                 }
             }
 
@@ -107,6 +119,12 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
                     <Button onClick={handleUploadFile} className="text-xl cursor-pointer col-span-1 w-32">Upload</Button>
                 </div>
             }
+            <XpToast
+                xp={toastState.xp}
+                message={toastState.message}
+                isVisible={toastState.isVisible}
+                onClose={hideToast}
+            />
         </div>
     );
 }

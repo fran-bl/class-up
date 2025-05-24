@@ -60,7 +60,7 @@ export default async function GradeHomework({ params }) {
                                         ) : (
                                             <div className="text-xl text-green-500">On Time</div>
                                         )}
-                                        <div className="text-xl">Grade: {submission.grade ? <p className="text-2xl max-sm:text-lg">{submission.grade}</p> : "-"}</div>
+                                        <div className="text-xl">Grade: {submission.grade ? <p className="text-2xl max-sm:text-lg">{submission.grade + "/100"}</p> : "-/100"}</div>
                                         <a href={submission.file_url} target="_blank" rel="noopener noreferrer" className="text-xl">
                                             File:{" "}
                                             <Button variant="outline" size="icon">
@@ -68,7 +68,7 @@ export default async function GradeHomework({ params }) {
                                             </Button>
                                         </a>
                                     </div>
-                                    <GradeForm homeworkId={submission.homework_id} studentId={submission.student_id} />
+                                    {!submission.graded && <GradeForm homeworkId={submission.homework_id} studentId={submission.student_id} />}
                                 </AccordionContent>
                             </AccordionItem>
                         ))}

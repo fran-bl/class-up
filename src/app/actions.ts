@@ -382,7 +382,7 @@ export const getSubmission = async (homeworkId: string) => {
     }
 }
 
-export const gradeHomework = async (homeworkId: string, studentId: string, grade: string) => {
+export const gradeHomework = async (homeworkId: string, studentId: string, grade: number) => {
     try {
         const supabase = await createClient();
         const { data, error } = await supabase
@@ -395,6 +395,8 @@ export const gradeHomework = async (homeworkId: string, studentId: string, grade
         if (error) {
             throw error;
         }
+
+        addXpToUserById(studentId, grade);
 
         return data;
     } catch (error) {

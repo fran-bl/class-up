@@ -9,18 +9,18 @@ import { Input } from "./ui/input";
 
 export default function GradeForm({ homeworkId, studentId }: { homeworkId: string; studentId: string }) {
     const [error, setError] = useState<string | null>(null);
-    const [grade, setGrade] = useState<string | null>(null);
+    const [grade, setGrade] = useState<number | null>(null);
     const router = useRouter();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
-        setGrade(value);
+        setGrade(parseInt(value));
         setError(null);
     }
 
     const validateForm = (): boolean => {
         let newError: string | null = null;
-        if (!grade || grade.trim() === "") {
+        if (!grade) {
             newError = "Grade is required";
         }
         setError(newError);
@@ -42,7 +42,7 @@ export default function GradeForm({ homeworkId, studentId }: { homeworkId: strin
         }
 
         toast.success("Grade added successfully!");
-        setGrade("");
+        setGrade(null);
         setError(null);
         router.refresh();
     }
@@ -54,7 +54,8 @@ export default function GradeForm({ homeworkId, studentId }: { homeworkId: strin
                     id="name"
                     onChange={handleInputChange}
                     type="text"
-                    placeholder="Grade"
+                    pattern="[0-9]*"
+                    placeholder="Grade (0-100)"
                 />
                 <p className={`text-red-500 min-h-[1.5rem] transition-opacity duration-200 ${error ? "opacity-100" : "opacity-0"}`}>
                     {error || " "}
