@@ -560,6 +560,167 @@ export const addXpToUserById = async (userId: string, xp: number) => {
     }
 }
 
+export const updateXpGainChallenges = async (classId: string, xp: number) => {
+    try {
+        const supabase = await createClient();
+        const { data: activeChallenges, error: challengesError } = await supabase
+            .rpc("get_active_xp_challenges", { class_id: classId });
+
+        if (challengesError) {
+            console.error("Error fetching challenges:", challengesError);
+            return false;
+        }
+
+        if (!activeChallenges || activeChallenges.length === 0) {
+            console.warn("No active challenges found for class:", classId);
+            return false;
+        }
+
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return false;
+        }
+
+        for (const challenge of activeChallenges) {
+            const newProgress = (challenge.progress || 0) + xp;
+            const { error: updateError } = await supabase
+                .from("challenges")
+                .update({ progress: newProgress })
+                .eq("id", challenge.id)
+
+            if (updateError) {
+                console.error(`Error updating progress for challenge ${challenge.id}:`, updateError);
+            }
+
+            const { data: participant, error: participantError } = await supabase
+                .from("challenge_participants")
+                .select("*")
+                .eq("challenge_id", challenge.id)
+                .eq("profile_id", user.id)
+                .maybeSingle()
+
+            if (participantError) {
+                console.error(`Error fetching participant for challenge ${challenge.id}:`, participantError);
+                continue;
+            }
+
+            if (participant) {
+                const newXp = (participant.contribution || 0) + xp;
+                const { error: updateParticipantError } = await supabase
+                    .from("challenge_participants")
+                    .update({ contribution: newXp })
+                    .eq("challenge_id", challenge.id)
+                    .eq("profile_id", user.id)
+
+                if (updateParticipantError) {
+                    console.error(`Error updating participant XP for challenge ${challenge.id}:`, updateParticipantError);
+                }
+            } else {
+                const { error: insertParticipantError } = await supabase
+                    .from("challenge_participants")
+                    .insert({
+                        challenge_id: challenge.id,
+                        profile_id: user.id,
+                        contribution: xp
+                    });
+
+                if (insertParticipantError) {
+                    console.error(`Error inserting participant for challenge ${challenge.id}:`, insertParticipantError);
+                }
+            }
+        }
+        
+        return true;
+    } catch (error) {
+        console.error("Error updating XP gain challenges:", error);
+        return false;
+    }
+}
+
+export const getChallenges = async () => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return [];
+        }
+
+        const { data: classes, error: classesError } = await supabase
+            .from("student_class")
+            .select("class_id")
+            .eq("student_id", user.id);
+        
+        if (classesError) {
+            console.error("Error fetching classes:", classesError);
+            return [];
+        }
+
+        const classIds = classes.map(item => item.class_id);
+
+        const now = new Date().toISOString();
+        const { data: challenges, error: challengesError } = await supabase
+            .from("challenges_expanded")
+            .select("*")
+            .in("target_class", classIds)
+            .gt("end_date", now)
+
+        if (challengesError) {
+            console.error("Error fetching challenges:", challengesError);
+            return [];
+        }
+        return challenges;
+    } catch (error) {
+        console.error("Error fetching challenges:", error);
+        return [];
+    }
+}
+
+export const getChallengeById = async (challengeId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("challenges")
+            .select("*")
+            .eq("id", challengeId)
+            .single();
+
+        if (error) {
+            console.error("Error fetching challenge:", error);
+            return null;
+        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching challenge:", error);
+        return null;
+    }
+}
+
+export const getParticipants = async (challengeId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("challenge_participants")
+            .select(`
+                *,
+                profile:profile_id (*)
+            `)
+            .eq("challenge_id", challengeId);
+
+        if (error) {
+            console.error("Error fetching participants:", error);
+            return [];
+        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching participants:", error);
+        return [];
+    }
+}
+
 export const getFormattedDate = async (dateString: string) => {
     const date = new Date(dateString);
     const timeZone = 'Europe/Berlin';

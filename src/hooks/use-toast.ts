@@ -17,11 +17,11 @@ export const useToast = (): UseToastReturn => {
   const [toastState, setToastState] = useState<ToastState>({
     isVisible: false,
     message: '',
-    duration: 3000,
+    duration: 2000,
     xp: 0
   });
 
-  const showToast = (message: string, xp: number, duration: number = 3000): void => {
+  const showToast = (message: string, xp: number, duration: number = 2000): void => {
     setToastState({
       isVisible: true,
       message,

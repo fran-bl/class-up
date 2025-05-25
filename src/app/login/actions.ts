@@ -106,6 +106,8 @@ export async function signup(formData: FormData): Promise<AuthResult> {
     }
 
     const userId = data.user?.id
+    const avatarUrl = data.user?.user_metadata?.avatar_url || null
+
     if (!userId) {
         return {
             success: false,
@@ -116,6 +118,7 @@ export async function signup(formData: FormData): Promise<AuthResult> {
     const { error: profileError } = await supabase.rpc("create_profile", {
         user_id: userId,
         username: username,
+        avatar_url: avatarUrl
     })
 
     if (profileError) {

@@ -1,10 +1,11 @@
+import ChallengesBox from "@/components/challenges-box";
 import RoleGate from "@/components/role-gate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Class } from "@/types/types";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { getClassesStudent } from "../actions";
+import { getChallenges, getClassesStudent } from "../actions";
 
 export default async function Dashboard() {
     const supabase = await createClient();
@@ -15,6 +16,7 @@ export default async function Dashboard() {
     }
 
     const classes: Class[] = (await getClassesStudent()).flat();
+    const challenges = await getChallenges();
 
     return (
         <RoleGate allowedRoles={["admin", "student"]}>
@@ -37,6 +39,8 @@ export default async function Dashboard() {
                 </span>
                 !
             </h1>
+            <ChallengesBox challenges={challenges} />
+            <h1 className="px-5 text-3xl font-bold mb-5">Classes</h1>
             <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4 place-items-stretch max-sm:px-4 px-15">
                 {classes?.map(c => (
                     <Card key={c.id} className="border-b-5 dark:border-b-blue-500 border-b-yellow-500 bg-[var(--background-color)] shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out pb-0">

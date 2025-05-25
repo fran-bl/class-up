@@ -1,6 +1,6 @@
 "use client";
 
-import { addXpToUser, getFormattedDate, getSubmission, makeSubmission, uploadSubmissionFile } from "@/app/actions";
+import { addXpToUser, getFormattedDate, getSubmission, makeSubmission, updateXpGainChallenges, uploadSubmissionFile } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Homework } from "@/types/types";
 import { Check, ExternalLink, X } from "lucide-react";
@@ -65,8 +65,10 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
                 if (submissionXpRes) {
                     if (early) {
                         showToast("You submitted early! You earned bonus 25 XP!", 75);
+                        await updateXpGainChallenges(homework.class_id, 75);
                     } else {
                         showToast("You submitted your homework! You earned 50 XP!", 50);
+                        await updateXpGainChallenges(homework.class_id, 50);
                     }
                 }
             }
@@ -75,7 +77,7 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
                 toast.success("Successfully submitted homework!");
                 setTimeout(() => {
                     router.back();
-                }, 2000);
+                }, 3000);
             } else {
                 toast.error("Error submitting homework!");
             }
