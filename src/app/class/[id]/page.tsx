@@ -1,7 +1,8 @@
-import { getClassDetailsStudent, getFormattedDate, getHomeworkForClass } from "@/app/actions";
+import { getClassDetailsStudent, getHomeworkForClass } from "@/app/actions";
 import RoleGate from "@/components/role-gate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { getFormattedDate } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 

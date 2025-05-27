@@ -1,21 +1,14 @@
 "use client"
 
+import { getLevel } from "@/lib/utils"
 import { createClient } from "@/utils/supabase/client"
 import { useEffect, useState } from "react"
 
 export function useCurrentUserData() {
   const [name, setName] = useState<string | null>(null)
+  const [id, setId] = useState<string | null>(null)
   const [levelData, setLevelData] = useState<number[]>([1, 0, 50])
   const supabase = createClient()
-
-  function getLevel(xp: number) {
-    if (xp < 0) xp = 0;
-
-    const level = Math.floor(Math.sqrt(xp / 50) + 1);
-    const totalXpForNextLevel = 50 * Math.pow(level, 2);
-
-    return [level, xp, totalXpForNextLevel];
-  }
 
   const fetchCurrentUser = async () => {
     try {
@@ -25,6 +18,8 @@ export function useCurrentUserData() {
         setName(null)
         return
       }
+
+      setId(data.user?.id || null)
 
       if (data?.user) {
         const { data: profileData, error: profileError } = await supabase
@@ -75,5 +70,5 @@ export function useCurrentUserData() {
     }
   }, [supabase.auth])
 
-  return { name, levelData }
+  return { name, id, levelData }
 }

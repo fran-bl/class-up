@@ -1,8 +1,9 @@
-import { getFormattedDate, getSubmissionsForHomework } from "@/app/actions";
+import { getSubmissionsForHomework } from "@/app/actions";
 import GradeForm from "@/components/grade-form";
 import RoleGate from "@/components/role-gate";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { getFormattedDate } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/server";
 import { Check, ExternalLink, X } from "lucide-react";
 import { redirect } from "next/navigation";
@@ -29,7 +30,7 @@ export default async function GradeHomework({ params }) {
         sortedSubmissions.map(async (submission) => ({
             ...submission,
             submitted_at_iso: submission.submitted_at,
-            submitted_at: submission.submitted_at ? await getFormattedDate(submission.submitted_at) : "",
+            submitted_at: submission.submitted_at ? getFormattedDate(submission.submitted_at) : "",
         }))
     );
 

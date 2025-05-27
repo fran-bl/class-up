@@ -1,9 +1,11 @@
-import { getClassDetailsTeacher, getFormattedDate, getHomeworkForClass } from "@/app/actions";
+import { getClassDetailsTeacher, getHomeworkForClass } from "@/app/actions";
 import AddStudentToClassForm from "@/components/add-student-to-class-form";
+import CreateChallengeForm from "@/components/create-challenge-form";
 import RoleGate from "@/components/role-gate";
 import StudentList from "@/components/student-list";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { getFormattedDate } from "@/lib/utils";
 import { Homework } from "@/types/types";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
@@ -30,8 +32,8 @@ export default async function ManageClass({ params }) {
     const homeworks = await Promise.all(
         sortedHomeworksRaw.map(async (homework: Homework) => ({
             ...homework,
-            due_date: homework.due_date ? await getFormattedDate(homework.due_date) : "",
-            created_at: homework.created_at ? await getFormattedDate(homework.created_at) : "",
+            due_date: homework.due_date ? getFormattedDate(homework.due_date) : "",
+            created_at: homework.created_at ? getFormattedDate(homework.created_at) : "",
         }))
     );
 
@@ -61,8 +63,27 @@ export default async function ManageClass({ params }) {
                 ) : (
                     <div className="text-xl">No homeworks assigned to this class</div>
                 )}
-                <StudentList classDetails={classDetails} />
-                <AddStudentToClassForm classDetails={classDetails} />
+                <div className="text-2xl max-sm:text-xl">Additional info:</div>
+                <Accordion type="single" collapsible className="w-1/2 max-sm:w-full max-sm:px-4">
+                    <AccordionItem value="students">
+                        <AccordionTrigger className="text-2xl max-sm:text-xl">Students</AccordionTrigger>
+                        <AccordionContent className="flex flex-col items-center justify-center gap-4">
+                            <StudentList classDetails={classDetails} />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="add-student">
+                        <AccordionTrigger className="text-2xl max-sm:text-xl">Add Student</AccordionTrigger>
+                        <AccordionContent className="flex flex-col items-center justify-center gap-4">
+                            <AddStudentToClassForm classDetails={classDetails} />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="create-challenge">
+                        <AccordionTrigger className="text-2xl max-sm:text-xl">Create Challenge</AccordionTrigger>
+                        <AccordionContent className="flex flex-col items-center justify-center gap-4">
+                            <CreateChallengeForm classDetails={classDetails} />
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             </div>
         </RoleGate>
     );

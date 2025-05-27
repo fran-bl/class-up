@@ -45,3 +45,15 @@ export interface ChallengeParticipant {
     };
     contribution: number;
 }
+
+export interface HomeworkSubmission {
+    id: string | undefined;
+    homework_id: string | undefined;
+    student_id: string | undefined;
+    submitted_at: string;
+    grade: number;
+    file_url: string | undefined;
+    homework?: {
+        title: string;
+    };
+}

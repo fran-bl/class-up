@@ -1,8 +1,7 @@
 "use server";
 
-import { Class, Homework } from "@/types/types";
+import { Challenge, Class, Homework } from "@/types/types";
 import { createClient } from "@/utils/supabase/server";
-import { format, toZonedTime } from "date-fns-tz";
 import { redirect } from "next/navigation";
 
 export const getClassesStudent = async () => {
@@ -176,6 +175,28 @@ export const getHomeworkDetails = async (homeworkId: string) => {
     }
 }
 
+export const getHomeworksForStudent = async (studentId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("homework_submission")
+            .select(`
+                *,
+                homework:homework_id (title)
+            `)
+            .eq("student_id", studentId)
+            .eq("graded", true)
+
+        if (error) {
+            throw error;
+        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching homeworks for student:", error);
+        return [];
+    }
+}
+
 export const createHomework = async (homeworkData: Homework) => {
     try {
         const supabase = await createClient();
@@ -265,23 +286,9 @@ export const addStudentToClass = async (classId: string | undefined, studentEmai
     }
 }
 
-export const deleteStudentFromClass = async (classId: string | undefined, username: string) => {
+export const deleteStudentFromClass = async (classId: string | undefined, studentId: string) => {
     try {
         const supabase = await createClient();
-        const { data, error } = await supabase
-            .from("student_class_profile")
-            .select("id")
-            .eq("username", username)
-            .eq("class_id", classId)
-            .single();
-
-        if (error || !data) {
-            console.error("Student not found");
-            return null;
-        }
-
-        const studentId = data.id;
-
         const { data: id, error: deleteError } = await supabase
             .from("student_class")
             .delete()
@@ -304,14 +311,19 @@ export const getStudentsInClass = async (classId: string) => {
         const supabase = await createClient();
         const { data, error } = await supabase
             .from("student_class_profile")
-            .select("username")
+            .select("username, id")
             .eq("class_id", classId);
 
         if (error) {
             throw error;
         }
 
-        const students = data.map((item) => item.username);
+        const students = data.map((item) => {
+            return {
+                username: item.username,
+                id: item.id
+            };
+        });
         return students;
     }
     catch (error) {
@@ -721,10 +733,51 @@ export const getParticipants = async (challengeId: string) => {
     }
 }
 
-export const getFormattedDate = async (dateString: string) => {
-    const date = new Date(dateString);
-    const timeZone = 'Europe/Berlin';
+export const getUserProfileById = async (userId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", userId)
+            .single();
 
-    const zonedDate = toZonedTime(date, timeZone);
-    return format(zonedDate, "dd.MM.yyyy'. at 'HH:mm", { timeZone });
+        if (error) {
+            console.error("Error fetching user profile:", error);
+            return null;
+        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        return null;
+    }
+}
+
+export const createChallenge = async (challengeData: Challenge) => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return null;
+        }
+
+        const userId = user.id;
+        challengeData.created_by = userId;
+
+        const { data, error } = await supabase
+            .from("challenges")
+            .insert([challengeData])
+            .select();
+
+        if (error) {
+            console.error("Error creating challenge:", error);
+            return null;
+        }
+        return data;
+    } catch (error) {
+        console.error("Error creating challenge:", error);
+        return null;
+    }
 }

@@ -70,17 +70,20 @@ export default function FloatingAvatar() {
         <DropdownMenuContent className="bg-opacity-90 bg-[var(--color-background)] border-2 border-primary shadow-none grid grid-cols-1 justify-items-center p-0">
           <DropdownMenuLabel>{userData.name || "Guest"}</DropdownMenuLabel>
           <DropdownMenuGroup className="flex flex-col items-center justify-center">
-            {
-              <div className="w-full flex flex-col items-center justify-center">
-                <div className="text-md">
-                  Level {userData.levelData[0]}
-                </div>
-                <Progress value={progress} indicatorColor="bg-green-500" />
-                <div className="text-sm">
-                  {userData.levelData[1]} / {userData.levelData[2]}
-                </div>
+            <div className="w-full flex flex-col items-center justify-center mb-5">
+              <div className="text-md">
+                Level {userData.levelData[0]}
               </div>
-            }
+              <Progress value={progress} indicatorColor="bg-green-500" />
+              <div className="text-sm">
+                {userData.levelData[1]} / {userData.levelData[2]}
+              </div>
+            </div>
+            <DropdownMenuItem className="cursor-pointer">
+              <button onClick={() => router.push(`/profile/${userData.id}`)} className="pb-2 px-4 font-medium cursor-pointer">
+                Profile
+              </button>
+            </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
               <button onClick={handleSignOut} className="pb-2 px-4 font-medium cursor-pointer">
                 Logout

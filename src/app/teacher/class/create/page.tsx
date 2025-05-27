@@ -90,7 +90,7 @@ export default function CreateClass() {
                             </div>
                         </div>
                     </div>
-                    <Button type="submit" className="text-xl cursor-pointer">Submit</Button>
+                    <Button type="submit" className="text-xl cursor-pointer">Create</Button>
                 </form>
             </div>
         </RoleGate>

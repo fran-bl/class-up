@@ -1,7 +1,8 @@
-import { getChallengeById, getFormattedDate, getParticipants } from "@/app/actions";
+import { getChallengeById, getParticipants } from "@/app/actions";
 import ChallengeLeaderboard from "@/components/challenge-leaderboard";
 import RoleGate from "@/components/role-gate";
 import { Progress } from "@/components/ui/progress";
+import { getFormattedDate } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -18,8 +19,8 @@ export default async function ChallengePage({ params }) {
     const challenge = await getChallengeById(id);
     const participants = await getParticipants(id);
 
-    const start = await getFormattedDate(challenge.start_date);
-    const end = await getFormattedDate(challenge.end_date);
+    const start = getFormattedDate(challenge.start_date);
+    const end = getFormattedDate(challenge.end_date);
 
     return (
         <RoleGate allowedRoles={["student", "admin"]}>

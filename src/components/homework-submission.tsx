@@ -1,7 +1,8 @@
 "use client";
 
-import { addXpToUser, getFormattedDate, getSubmission, makeSubmission, updateXpGainChallenges, uploadSubmissionFile } from "@/app/actions";
+import { addXpToUser, getSubmission, makeSubmission, updateXpGainChallenges, uploadSubmissionFile } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
+import { getFormattedDate } from "@/lib/utils";
 import { Homework } from "@/types/types";
 import { Check, ExternalLink, X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -29,7 +30,7 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
             }
             const data = await getSubmission(homework.id);
             if (data) {
-                setSubmittedDate(await getFormattedDate(data.submitted_at));
+                setSubmittedDate(getFormattedDate(data.submitted_at));
                 setGraded(data.graded);
                 setGrade(data.grade);
                 setSubittedFile(data.file_url);

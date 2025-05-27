@@ -48,7 +48,7 @@ export default function AddStudentToClassForm({ classDetails }: { classDetails: 
     }
     return (
         <form onSubmit={handleSubmit} className="max-sm:w-full w-1/2 flex flex-col p-5">
-            <h1 className="text-2xl max-sm:text-xl text-center">Add student to class</h1>
+            <h1 className="text-2xl max-sm:text-xl text-center">Add student to class:</h1>
             <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 max-sm:grid-cols-1 items-center gap-4 min-h-[4rem]">
                     <Label htmlFor="email" className="text-right text-xl">E-mail</Label>

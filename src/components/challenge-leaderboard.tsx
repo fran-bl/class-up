@@ -1,19 +1,11 @@
 "use client";
 
+import { getLevel } from "@/lib/utils";
 import { ChallengeParticipant } from "@/types/types";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function ChallengeLeaderboard({ participants }: { participants: ChallengeParticipant[] }) {
-    function getLevel(xp: number) {
-        if (xp < 0) xp = 0;
-
-        const level = Math.floor(Math.sqrt(xp / 50) + 1);
-        const totalXpForNextLevel = 50 * Math.pow(level, 2);
-
-        return [level, xp, totalXpForNextLevel];
-    }
-
     const sortedParticipants = participants
         .sort((a, b) => b.contribution - a.contribution)
         .map(participant => ({

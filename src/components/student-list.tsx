@@ -2,14 +2,21 @@
 
 import { deleteStudentFromClass, getStudentsInClass } from "@/app/actions";
 import { Class } from "@/types/types";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 
+type Student = {
+    username: string;
+    id: string;
+}
+
 export default function StudentList({ classDetails }: { classDetails: Class | null }) {
-    const [students, setStudents] = useState<string[]>([]);
+    const [students, setStudents] = useState<Student[]>([]);
     const [studentsLoading, setStudentsLoading] = useState<boolean>(true);
+    const router = useRouter();
 
     useEffect(() => {
         async function fetchStudentsInClass() {
@@ -23,11 +30,11 @@ export default function StudentList({ classDetails }: { classDetails: Class | nu
 
         fetchStudentsInClass();
     }, [classDetails]);
-        
-    const handleRemoveStudent = async (username: string) => {
-        setStudents((prevStudents) => prevStudents.filter((student) => student !== username));
 
-        const res = await deleteStudentFromClass(classDetails?.id, username);
+    const handleRemoveStudent = async (id: string) => {
+        setStudents((prevStudents) => prevStudents.filter((student) => student.id !== id));
+
+        const res = await deleteStudentFromClass(classDetails?.id, id);
         if (!res) {
             toast.error("Error removing student!");
             return;
@@ -46,8 +53,9 @@ export default function StudentList({ classDetails }: { classDetails: Class | nu
                 ) : students.length > 0 ? (
                     students.map((student, index) => (
                         <div className="grid grid-cols-3 gap-5" key={index}>
-                            <div key={index} className="text-xl col-span-2">{student}</div>
-                            <Button onClick={() => handleRemoveStudent(student)} className="text-xl cursor-pointer">Remove</Button>
+                            <div key={index} className="text-xl col-span-1">{student.username}</div>
+                            <Button onClick={() => router.push(`/profile/${student.id}`)} className="text-xl max-sm:text-sm cursor-pointer">View Profile</Button>
+                            <Button onClick={() => handleRemoveStudent(student.id)} className="text-xl max-sm:text-sm cursor-pointer">Remove</Button>
                         </div>
                     ))
                 ) : (
