@@ -23,7 +23,7 @@ export default async function ChallengePage({ params }) {
     const end = getFormattedDate(challenge.end_date);
 
     return (
-        <RoleGate allowedRoles={["student", "admin"]}>
+        <RoleGate allowedRoles={["student", "teacher", "admin"]}>
             <div className="flex flex-col items-center justify-center p-4">
                 <h1 className="text-4xl font-bold mb-4 max-sm:text-2xl max-sm:mt-16">{challenge.title}</h1>
                 <p className="mb-4 text-xl max-sm:text-lg">{challenge.description}</p>

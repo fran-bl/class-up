@@ -95,13 +95,15 @@ export default function CreateChallengeForm({ classDetails }: { classDetails: Cl
         if (!challengeDetails.condition_type) {
             newOtherErrors.condition_type = "Condition type is required";
         }
-        if (!challengeDetails.start_date) {
-            newErrors.start_date = "Start date is required";
-        }
-        if (!challengeDetails.end_date) {
-            newErrors.end_date = "End date is required";
-        } else if (challengeDetails.start_date && new Date(challengeDetails.end_date) <= new Date(challengeDetails.start_date)) {
-            newErrors.end_date = "End date must be after start date";
+        if (challengeDetails.type !== "weekly") {
+            if (!challengeDetails.start_date) {
+                newErrors.start_date = "Start date is required";
+            }
+            if (!challengeDetails.end_date) {
+                newErrors.end_date = "End date is required";
+            } else if (challengeDetails.start_date && new Date(challengeDetails.end_date) <= new Date(challengeDetails.start_date)) {
+                newErrors.end_date = "End date must be after start date";
+            }
         }
 
         setErrors(newErrors);
@@ -115,7 +117,16 @@ export default function CreateChallengeForm({ classDetails }: { classDetails: Cl
             return;
         }
 
-        const result = await createChallenge(challengeDetails);
+        const challengeToSend = { ...challengeDetails };
+
+        if (challengeDetails.type === "weekly") {
+            const now = new Date();
+            const end = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+            challengeToSend.start_date = now.toISOString();
+            challengeToSend.end_date = end.toISOString();
+        }
+
+        const result = await createChallenge(challengeToSend);
         if (!result) {
             toast.error("Error creating challenge!");
             return;
@@ -252,24 +263,28 @@ export default function CreateChallengeForm({ classDetails }: { classDetails: Cl
                                 </p>
                             </div>
                         </div>
-                        <div className="grid grid-cols-4 max-sm:grid-cols-1 items-center gap-4 min-h-[4rem]">
-                            <Label className="text-right text-xl">Start date</Label>
-                            <div className="col-span-3 max-sm:col-span-1">
-                                <DateTimePicker value={undefined} onChange={handleStartDateChange} />
-                                <p className={`text-red-500 min-h-[1.5rem] transition-opacity duration-200 ${errors.start_date ? "opacity-100" : "opacity-0"}`}>
-                                    {errors.start_date || " "}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-4 max-sm:grid-cols-1 items-center gap-4 min-h-[4rem]">
-                            <Label className="text-right text-xl">End date</Label>
-                            <div className="col-span-3 max-sm:col-span-1">
-                                <DateTimePicker value={undefined} onChange={handleEndDateChange} />
-                                <p className={`text-red-500 min-h-[1.5rem] transition-opacity duration-200 ${errors.end_date ? "opacity-100" : "opacity-0"}`}>
-                                    {errors.end_date || " "}
-                                </p>
-                            </div>
-                        </div>
+                        {challengeDetails.type !== "weekly" && (
+                            <>
+                                <div className="grid grid-cols-4 max-sm:grid-cols-1 items-center gap-4 min-h-[4rem]">
+                                    <Label className="text-right text-xl">Start date</Label>
+                                    <div className="col-span-3 max-sm:col-span-1">
+                                        <DateTimePicker value={undefined} onChange={handleStartDateChange} />
+                                        <p className={`text-red-500 min-h-[1.5rem] transition-opacity duration-200 ${errors.start_date ? "opacity-100" : "opacity-0"}`}>
+                                            {errors.start_date || " "}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-4 max-sm:grid-cols-1 items-center gap-4 min-h-[4rem]">
+                                    <Label className="text-right text-xl">End date</Label>
+                                    <div className="col-span-3 max-sm:col-span-1">
+                                        <DateTimePicker value={undefined} onChange={handleEndDateChange} />
+                                        <p className={`text-red-500 min-h-[1.5rem] transition-opacity duration-200 ${errors.end_date ? "opacity-100" : "opacity-0"}`}>
+                                            {errors.end_date || " "}
+                                        </p>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                     <Button type="submit" className="text-xl cursor-pointer">Create</Button>
                 </form>

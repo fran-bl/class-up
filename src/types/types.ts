@@ -57,3 +57,23 @@ export interface HomeworkSubmission {
         title: string;
     };
 }
+
+export interface Badge {
+    id: string;
+    name: string;
+    description: string;
+    icon_url: string;
+    type: "milestone" | "streak" | "event" | "one_time";
+    condition_type: "xp_total" | "homework_count" | "challenge_win";
+    condition_value: number;
+    event_start: string | undefined;
+    event_end: string | undefined;
+    created_at: string;
+    badges_progress?: {
+        id: string;
+        profile_id: string;
+        badge_id: string;
+        progress_value: number;
+        updated_at: string;
+    }
+}

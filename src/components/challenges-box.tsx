@@ -1,5 +1,6 @@
 "use client";
 
+import { calculateTime } from "@/lib/utils";
 import { Challenge } from "@/types/types";
 import { CalendarFold, UserRound, Users } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
@@ -8,15 +9,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card"
 import { Progress } from "./ui/progress";
 
 export default function ChallengesBox({ challenges }: { challenges: Challenge[] }) {
-    function calculateTime(endString: string) {
-        const end = new Date(endString);
-        const timeDifference = end.getTime() - Date.now();
-        const days = Math.floor(timeDifference / (1000 * 3600 * 24));
-        const hours = Math.floor((timeDifference % (1000 * 3600 * 24)) / (1000 * 3600));
-
-        return days + " days, " + hours + " hours left";
-    }
-
     return (
         <Accordion type="single" collapsible className="w-full mx-auto mb-8 px-5">
             <AccordionItem value="challenges" className="text-center mb-4">

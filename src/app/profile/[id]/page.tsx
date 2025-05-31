@@ -1,14 +1,16 @@
 "use client";
 
 import { getHomeworksForStudent, getUserProfileById } from "@/app/actions";
+import { BadgesDisplay } from "@/components/badges-display";
 import RoleGate from "@/components/role-gate";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { getFormattedDate, getLevel } from "@/lib/utils";
 import { HomeworkSubmission } from "@/types/types";
-import { Award, BookOpen, Calendar, TrendingUp } from "lucide-react";
+import { Award, Badge as BadgeIcon, BookOpen, Calendar, TrendingUp } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -92,8 +94,23 @@ export default function ProfilePage() {
                     <Badge variant="secondary" className="mt-1">Level {level}</Badge>
                 </div>
             </div>
+            <Card className="bg-background m-1 lg:mx-15">
+                <Accordion type="single" collapsible>
+                    <AccordionItem value="badges">
+                        <AccordionTrigger className="flex items-center justify-between hover:cursor-pointer hover:no-underline font-normal [&>svg:last-child]:hidden">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">Badges</CardTitle>       
+                            </CardHeader>
+                            <BadgeIcon className="h-4 w-4 text-muted-foreground mr-6" />
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <BadgesDisplay userId={params.id as string} />
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            </Card>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:mx-15">
-                <Card className="bg-background m-1">
+                <Card className="bg-background">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Average Score</CardTitle>
                         <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -103,7 +120,7 @@ export default function ProfilePage() {
                         <p className="text-xs text-muted-foreground">Across all assignments</p>
                     </CardContent>
                 </Card>
-                <Card className="bg-background m-1">
+                <Card className="bg-background mx-1">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Highest Score</CardTitle>
                         <Award className="h-4 w-4 text-muted-foreground" />
@@ -113,7 +130,7 @@ export default function ProfilePage() {
                         <p className="text-xs text-muted-foreground">Best performance</p>
                     </CardContent>
                 </Card>
-                <Card className="bg-background m-1">
+                <Card className="bg-background">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Assignments</CardTitle>
                         <BookOpen className="h-4 w-4 text-muted-foreground" />

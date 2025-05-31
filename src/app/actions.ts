@@ -561,7 +561,7 @@ export const addXpToUserById = async (userId: string, xp: number) => {
             .update({ xp: newXP })
             .eq("id", userId)
             .select();
-            
+
         if (updateError) {
             throw updateError;
         }
@@ -596,16 +596,6 @@ export const updateXpGainChallenges = async (classId: string, xp: number) => {
         }
 
         for (const challenge of activeChallenges) {
-            const newProgress = (challenge.progress || 0) + xp;
-            const { error: updateError } = await supabase
-                .from("challenges")
-                .update({ progress: newProgress })
-                .eq("id", challenge.id)
-
-            if (updateError) {
-                console.error(`Error updating progress for challenge ${challenge.id}:`, updateError);
-            }
-
             const { data: participant, error: participantError } = await supabase
                 .from("challenge_participants")
                 .select("*")
@@ -642,8 +632,18 @@ export const updateXpGainChallenges = async (classId: string, xp: number) => {
                     console.error(`Error inserting participant for challenge ${challenge.id}:`, insertParticipantError);
                 }
             }
+
+            const newProgress = (challenge.progress || 0) + xp;
+            const { error: updateError } = await supabase
+                .from("challenges")
+                .update({ progress: newProgress })
+                .eq("id", challenge.id)
+
+            if (updateError) {
+                console.error(`Error updating progress for challenge ${challenge.id}:`, updateError);
+            }
         }
-        
+
         return true;
     } catch (error) {
         console.error("Error updating XP gain challenges:", error);
@@ -665,7 +665,7 @@ export const getChallenges = async () => {
             .from("student_class")
             .select("class_id")
             .eq("student_id", user.id);
-        
+
         if (classesError) {
             console.error("Error fetching classes:", classesError);
             return [];
@@ -687,6 +687,53 @@ export const getChallenges = async () => {
         return challenges;
     } catch (error) {
         console.error("Error fetching challenges:", error);
+        return [];
+    }
+}
+
+export const getChallengesTeacher = async () => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return [];
+        }
+
+        const userId = user.id;
+
+        const { data: challenges, error: challengesError } = await supabase
+            .from("challenges_expanded")
+            .select("*")
+            .eq("created_by", userId);
+
+        if (challengesError) {
+            console.error("Error fetching challenges:", challengesError);
+            return [];
+        }
+        return challenges;
+    } catch (error) {
+        console.error("Error fetching challenges:", error);
+        return [];
+    }
+}
+
+export const getChallengesForClass = async (classId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("challenges_expanded")
+            .select("*")
+            .eq("target_class", classId);
+
+        if (error) {
+            console.error("Error fetching challenges for class:", error);
+            return [];
+        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching challenges for class:", error);
         return [];
     }
 }
@@ -779,5 +826,45 @@ export const createChallenge = async (challengeData: Challenge) => {
     } catch (error) {
         console.error("Error creating challenge:", error);
         return null;
+    }
+}
+
+export const getBadges = async () => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("badges")
+            .select("*");
+
+        if (error) {
+            console.error("Error fetching badges:", error);
+            return [];
+        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching badges:", error);
+        return [];
+    }
+}
+
+export const getUserBadges = async (userId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("badges")
+            .select(`
+                *,
+                badges_progress (*)
+            `)
+            .eq("badges_progress.profile_id", userId);
+
+        if (error) {
+            console.error("Error fetching user badges:", error);
+            return [];
+        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching user badges:", error);
+        return [];
     }
 }

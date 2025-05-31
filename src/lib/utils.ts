@@ -22,3 +22,12 @@ export function getFormattedDate(dateString: string) {
   const zonedDate = toZonedTime(date, timeZone);
   return format(zonedDate, "dd.MM.yyyy'. at 'HH:mm", { timeZone });
 }
+
+export function calculateTime(endString: string) {
+  const end = new Date(endString);
+  const timeDifference = end.getTime() - Date.now();
+  const days = Math.floor(timeDifference / (1000 * 3600 * 24));
+  const hours = Math.floor((timeDifference % (1000 * 3600 * 24)) / (1000 * 3600));
+
+  return days + " days, " + hours + " hours left";
+}
