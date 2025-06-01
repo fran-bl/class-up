@@ -14,22 +14,13 @@ export const getClassesStudent = async () => {
             return [];
         }
 
-        const userId = user.id;
-
-        const { data, error } = await supabase
-            .from("student_class")
-            .select(`
-                classes:class_id (*)
-            `)
-            .eq("student_id", userId);
+        const { data, error } = await supabase.rpc("get_student_classes_with_active_assignments", { student_uuid: user.id });
 
         if (error) {
             throw error;
         }
 
-        const classes = data.map((item) => item.classes);
-
-        return classes;
+        return data;
     } catch (error) {
         console.error("Error fetching classes:", error);
         return [];

@@ -31,3 +31,16 @@ export function calculateTime(endString: string) {
 
   return days + " days, " + hours + " hours left";
 }
+
+
+export function getDueDateColor(dueDate: string) {
+  const now = new Date();
+  const due = new Date(dueDate);
+  const diffMs = due.getTime() - now.getTime();
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+  if (diffDays < 0) return "text-red-600";
+  if (diffDays < 1) return "text-orange-500";
+  if (diffDays < 3) return "text-yellow-500";
+  return "text-green-600";
+}

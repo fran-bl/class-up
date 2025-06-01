@@ -4,6 +4,7 @@ export interface Class {
     name: string;
     description: string | undefined;
     created_at: string | undefined;
+    active_assignments?: number;
 }
 
 export interface Homework {

@@ -1,7 +1,7 @@
 "use client";
 
 import { addXpToUser, getSubmission, makeSubmission, updateXpGainChallenges, uploadSubmissionFile } from "@/app/actions";
-import { useToast } from "@/hooks/use-toast";
+import { useXpToast } from "@/hooks/use-xp-toast";
 import { getFormattedDate } from "@/lib/utils";
 import { Homework } from "@/types/types";
 import { Check, ExternalLink, X } from "lucide-react";
@@ -19,7 +19,7 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
     const [graded, setGraded] = useState<boolean>(false);
     const [grade, setGrade] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const { toastState, showToast, hideToast } = useToast();
+    const { xpToastState, showXpToast, hideXpToast } = useXpToast();
     const router = useRouter();
 
     useEffect(() => {
@@ -65,10 +65,10 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
 
                 if (submissionXpRes) {
                     if (early) {
-                        showToast("You submitted early! You earned bonus 25 XP!", 75);
+                        showXpToast("You submitted early! You earned bonus 25 XP!", 75);
                         await updateXpGainChallenges(homework.class_id, 75);
                     } else {
-                        showToast("You submitted your homework! You earned 50 XP!", 50);
+                        showXpToast("You submitted your homework! You earned 50 XP!", 50);
                         await updateXpGainChallenges(homework.class_id, 50);
                     }
                 }
@@ -123,10 +123,10 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
                 </div>
             }
             <XpToast
-                xp={toastState.xp}
-                message={toastState.message}
-                isVisible={toastState.isVisible}
-                onClose={hideToast}
+                xp={xpToastState.xp}
+                message={xpToastState.message}
+                isVisible={xpToastState.isVisible}
+                onClose={hideXpToast}
             />
         </div>
     );

@@ -1,7 +1,6 @@
+import AnimatedClassGrid from "@/components/animated-class-grid";
 import ChallengesBox from "@/components/challenges-box";
 import RoleGate from "@/components/role-gate";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Class } from "@/types/types";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
@@ -41,23 +40,7 @@ export default async function Dashboard() {
             </h1>
             <ChallengesBox challenges={challenges} />
             <h1 className="px-5 text-3xl font-bold mb-5">Classes</h1>
-            <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4 place-items-stretch max-sm:px-4 px-15">
-                {classes?.map(c => (
-                    <Card key={c.id} className="border-b-5 dark:border-b-blue-500 border-b-yellow-500 bg-[var(--background-color)] shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out pb-0">
-                        <CardHeader>
-                            <CardTitle className="text-2xl">{c.name}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <CardDescription className="text-lg">{c.description}</CardDescription>
-                        </CardContent>
-                        <CardFooter className="justify-center">
-                            <a href={`/class/${c.id}`}>
-                                <Button className="text-xl cursor-pointer rounded-b-none dark:bg-blue-500 bg-yellow-500 shadow-none text-black hover:bg-opacity-0">Details</Button>
-                            </a>
-                        </CardFooter>
-                    </Card>
-                ))}
-            </div>
+            <AnimatedClassGrid classes={classes} />
         </RoleGate>
     );
 }

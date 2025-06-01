@@ -4,6 +4,7 @@ import { createClient } from '@/utils/supabase/client';
 import { jwtDecode } from 'jwt-decode';
 import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import BadgeListener from './badge-listener';
 
 type RoleGateProps = {
   allowedRoles: string[];
@@ -45,5 +46,8 @@ export default function RoleGate({ allowedRoles, children }: RoleGateProps) {
     return null;
   }
 
-  return <>{children}</>;
+  return <>
+    <BadgeListener />
+    {children}
+  </>;
 }

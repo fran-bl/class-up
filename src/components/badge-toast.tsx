@@ -1,27 +1,31 @@
 import { useEffect, useState } from 'react';
 
-interface ToastProps {
-    xp: number;
+interface BadgeToastProps {
+    icon_url: string;
     message: string;
     isVisible: boolean;
     onClose: () => void;
     duration?: number;
 }
 
-const XpToast: React.FC<ToastProps> = ({
-    xp,
+const BadgeToast: React.FC<BadgeToastProps> = ({
+    icon_url,
     message,
     isVisible,
     onClose,
-    duration = 3000
+    duration = 5000
 }) => {
     const [shouldRender, setShouldRender] = useState<boolean>(false);
     const [animationClass, setAnimationClass] = useState<string>('');
+    const [showBadge, setShowBadge] = useState<boolean>(false);
 
     useEffect(() => {
         if (isVisible) {
             setShouldRender(true);
+            setShowBadge(false);
             const enterTimer = setTimeout(() => setAnimationClass('animate-in'), 10);
+
+            const badgeTimer = setTimeout(() => setShowBadge(true), 1000);
 
             const hideTimer = setTimeout(() => {
                 handleClose();
@@ -29,6 +33,7 @@ const XpToast: React.FC<ToastProps> = ({
 
             return () => {
                 clearTimeout(enterTimer);
+                clearTimeout(badgeTimer);
                 clearTimeout(hideTimer);
             };
         }
@@ -39,6 +44,7 @@ const XpToast: React.FC<ToastProps> = ({
         setTimeout(() => {
             setShouldRender(false);
             setAnimationClass('');
+            setShowBadge(false);
             onClose();
         }, 400);
     };
@@ -49,14 +55,14 @@ const XpToast: React.FC<ToastProps> = ({
         <div className={`toast-overlay ${animationClass}`}>
             <div className="toast-backdrop" onClick={handleClose} />
             <div className="toast-content">
-                <div className="confetti-container">
+                <span className="toast-message">{message}</span>
+                <div className={`badge-image-wrapper${showBadge ? " badge-pop-in" : ""}`}>
                     <img
-                        src="/confetti.gif"
-                        className="confetti-animation"
+                        src={icon_url}
+                        alt="Badge Icon"
+                        className="badge-image"
                     />
                 </div>
-                <p style={{ fontFamily: "var(--font-gta-medium)" }}>+{xp} XP!</p>
-                <span className="toast-message">{message}</span>
             </div>
 
             <style jsx>{`
@@ -107,6 +113,9 @@ const XpToast: React.FC<ToastProps> = ({
           min-width: 300px;
           text-align: center;
           transition: transform 0.4s ease-in-out;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
 
         .toast-overlay.animate-out .toast-content .toast-message {
@@ -123,6 +132,44 @@ const XpToast: React.FC<ToastProps> = ({
           font-size: 32px;
           color:rgb(255, 255, 255);
           transition: transform 0.4s ease-in-out;
+          margin-bottom: 16px;
+        }
+
+        .badge-image-wrapper {
+          opacity: 0;
+          transform: scale(0.7);
+          transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+          will-change: opacity, transform;
+          display: flex;
+          justify-content: center;
+        }
+
+        .badge-image-wrapper.badge-pop-in {
+          opacity: 1;
+          transform: scale(1.15);
+          animation: badge-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes badge-pop {
+          0% {
+            opacity: 0;
+            transform: scale(0.7);
+          }
+          70% {
+            opacity: 1;
+            transform: scale(1.2);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1.0);
+          }
+        }
+
+        .badge-image {
+          width: 150px;
+          height: 150px;
+          object-fit: contain;
+          margin-top: 8px;
         }
 
         .toast-close {
@@ -143,34 +190,6 @@ const XpToast: React.FC<ToastProps> = ({
           color: #374151;
         }
 
-        .confetti-container {
-          position: absolute;
-          top: 10%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          pointer-events: none;
-          z-index: 1;
-        }
-
-        .confetti-animation {
-          width: 400px;
-          height: 400px;
-          object-fit: contain;
-          opacity: 0;
-          animation: confetti-entrance 0.3s ease-out 0.1s forwards;
-        }
-
-        @keyframes confetti-entrance {
-          from {
-            opacity: 0;
-            transform: scale(0.8);
-          }
-          to {
-            opacity: 0.9;
-            transform: scale(1);
-          }
-        }
-
         @media (max-width: 480px) {
           .toast-content {
             margin: 20px;
@@ -183,4 +202,4 @@ const XpToast: React.FC<ToastProps> = ({
     );
 };
 
-export default XpToast;
+export default BadgeToast;

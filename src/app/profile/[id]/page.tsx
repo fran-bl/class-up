@@ -97,7 +97,7 @@ export default function ProfilePage() {
             <Card className="bg-background m-1 lg:mx-15">
                 <Accordion type="single" collapsible>
                     <AccordionItem value="badges">
-                        <AccordionTrigger className="flex items-center justify-between hover:cursor-pointer hover:no-underline font-normal [&>svg:last-child]:hidden">
+                        <AccordionTrigger className="flex items-center justify-between hover:cursor-pointer hover:no-underline font-normal pt-0 [&>svg:last-child]:hidden">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">Badges</CardTitle>       
                             </CardHeader>
