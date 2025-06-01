@@ -7,7 +7,7 @@ import { Check, CircleAlert } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { Button } from "./ui/button"
 
-export default function AnimatedClassGrid({ classes }: { classes: Class[] }) {
+export default function AnimatedClassGrid({ classes, isTeacher }: { classes: Class[], isTeacher: boolean }) {
   const [visibleCards, setVisibleCards] = useState<Set<number>>(new Set())
   const cardRefs = useRef<(HTMLDivElement | null)[]>([])
 
@@ -72,7 +72,7 @@ export default function AnimatedClassGrid({ classes }: { classes: Class[] }) {
               <CardDescription className="text-lg">{c.description}</CardDescription>
             </CardContent>
             <CardFooter className="justify-center">
-              <a href={`/class/${c.id}`}>
+              <a href={isTeacher ? `/teacher/class/manage/${c.id}` : `/class/${c.id}`}>
                 <Button className="text-xl cursor-pointer rounded-b-none dark:bg-blue-500 bg-yellow-500 shadow-none text-black hover:bg-opacity-0">
                   Details
                 </Button>

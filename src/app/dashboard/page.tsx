@@ -40,7 +40,7 @@ export default async function Dashboard() {
             </h1>
             <ChallengesBox challenges={challenges} />
             <h1 className="px-5 text-3xl font-bold mb-5">Classes</h1>
-            <AnimatedClassGrid classes={classes} />
+            <AnimatedClassGrid classes={classes} isTeacher={false} />
         </RoleGate>
     );
 }

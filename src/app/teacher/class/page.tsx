@@ -17,7 +17,7 @@ export default async function ClassList() {
     return (
         <RoleGate allowedRoles={["admin", "teacher"]}>
             <h1 className="text-4xl max-sm:text-2xl text-center max-sm:mt-16 m-4">Manage classes</h1>
-            <AnimatedClassGrid classes={classes} />
+            <AnimatedClassGrid classes={classes} isTeacher={true} />
         </RoleGate>
     );
 }
