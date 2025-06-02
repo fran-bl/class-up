@@ -125,6 +125,45 @@ export const getHomeworkForClass = async (classId: string) => {
     }
 }
 
+export const getHomeworkForClassStudent = async (classId: string) => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return [];
+        }
+
+        const { data: homeworks, error } = await supabase
+            .from("homework")
+            .select(`
+                *,
+                homework_submission:homework_submission (
+                    id,
+                    student_id
+                )
+            `)
+            .eq("class_id", classId)
+
+        if (error) {
+            throw error;
+        }
+
+        const result = (homeworks || []).map(hw => ({
+            ...hw,
+            submitted: Array.isArray(hw.homework_submission)
+                ? hw.homework_submission.some((sub: { student_id: string }) => sub.student_id === user.id)
+                : false
+        }));
+
+        return result;
+    } catch (error) {
+        console.error("Error fetching homework:", error);
+        return [];
+    }
+}
+
 export const getHomeworkDetails = async (homeworkId: string) => {
     try {
         const supabase = await createClient();
@@ -857,5 +896,94 @@ export const getUserBadges = async (userId: string) => {
     } catch (error) {
         console.error("Error fetching user badges:", error);
         return [];
+    }
+}
+
+export const getNumberOfClasses = async () => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return 0;
+        }
+
+        const userId = user.id;
+
+        const { count, error } = await supabase
+            .from("classes")
+            .select("*", { count: "exact" })
+            .eq("teacher_id", userId);
+
+        if (error) {
+            throw error;
+        }
+        return count || 0;
+    } catch (error) {
+        console.error("Error fetching number of classes:", error);
+        return 0;
+    }
+}
+
+export const getNumberOfActiveHomeworks = async () => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return 0;
+        }
+
+        const userId = user.id;
+
+        const { count, error } = await supabase
+            .from("homework")
+            .select(`
+                *,
+                classes:class_id (teacher_id)    
+            `, { count: "exact" })
+            .eq("classes.teacher_id", userId)
+            .gt("due_date", new Date().toISOString());
+
+        if (error) {
+            throw error;
+        }
+        return count || 0;
+    } catch (error) {
+        console.error("Error fetching number of active homeworks:", error);
+        return 0;
+    }
+}
+
+export const getSubmissionsToGrade = async () => {
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            console.error("Error fetching user:", userError);
+            return 0;
+        }
+
+        const userId = user.id;
+
+        const { count, error } = await supabase
+            .from("homework_submission")
+            .select(`
+                *,
+                classes:class_id (teacher_id)
+            `, { count: "exact" })
+            .eq("graded", false)
+            .eq("classes.teacher_id", userId);
+
+        if (error) {
+            throw error;
+        }
+        return count || 0;
+    } catch (error) {
+        console.error("Error fetching submissions to grade:", error);
+        return 0;
     }
 }

@@ -1,5 +1,6 @@
 "use client"
 
+import { GoogleSignInButton } from "@/components/google-signin-button"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -83,17 +84,18 @@ export default function LoginPage() {
         </span>
         !
       </h1>
+      <GoogleSignInButton />
       <div className="w-full max-w-md p-6 rounded-lg shadow-md shadow-none">
         <div className="flex justify-center mb-6 border-b">
           <button
             onClick={() => setFormType("login")}
-            className={`pb-2 px-4 ${formType === "login" ? "border-b-2 border-primary font-medium" : "text-gray-500"}`}
+            className={`pb-2 px-4 cursor-pointer ${formType === "login" ? "border-b-2 border-primary font-medium" : "text-gray-500"}`}
           >
             Log in
           </button>
           <button
             onClick={() => setFormType("signup")}
-            className={`pb-2 px-4 ${formType === "signup" ? "border-b-2 border-primary font-medium" : "text-gray-500"}`}
+            className={`pb-2 px-4 cursor-pointer ${formType === "signup" ? "border-b-2 border-primary font-medium" : "text-gray-500"}`}
           >
             Sign up
           </button>

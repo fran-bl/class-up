@@ -166,7 +166,7 @@ export default function CreateHomework() {
                             <div className="col-span-3 max-sm:col-span-1">
                                 <FileInput
                                     id="file"
-                                    accept="application/pdf, image/*"
+                                    accept="application/pdf"
                                     onFileSelect={setFile}
                                 />
                             </div>

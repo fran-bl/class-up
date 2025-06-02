@@ -41,6 +41,5 @@ export function getDueDateColor(dueDate: string) {
 
   if (diffDays < 0) return "text-red-600";
   if (diffDays < 1) return "text-orange-500";
-  if (diffDays < 3) return "text-yellow-500";
   return "text-green-600";
 }

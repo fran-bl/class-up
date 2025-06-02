@@ -120,7 +120,7 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
   }
 
   return (
-    <Card className="w-full max-w-full h-200 overflow-hidden bg-[var(--background-color)] shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
+    <Card className="w-full max-w-full h-200 overflow-hidden bg-[var(--background-color)] shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out pt-0">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="text-lg font-medium">{fileName}</div>
         <div className="flex items-center space-x-2">

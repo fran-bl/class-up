@@ -92,17 +92,17 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
         <div className="flex flex-col">
             <div>
                 {submittedDate && (
-                    <div>
-                        <p className="text-xl max-sm:text-sm">Submitted: {submittedDate}<Check className="text-green-500 inline-block h-15 w-15 ml-5" /></p>
-                        <div className="text-xl max-sm:text-sm">Graded: {graded ?
-                            <>
-                                <p className="inline-block text-2xl">{grade}</p>
-                                <Check className="text-green-500 inline-block h-15 w-15 ml-5" />
-                            </>
-                            : <X className="text-red-500 inline-block h-15 w-15 ml-5" />}
+                    <div className="grid gap-5">
+                        <div className="text-xl max-sm:text-sm w-[65%] flex justify-between">Graded: {graded ?
+                            <Check className="text-green-500 inline-block h-10 w-10" />
+                            : <X className="text-red-500 inline-block h-10 w-10" />}
                         </div>
-                        <p></p>
-                        <a href={submittedFile ?? undefined} target="_blank" rel="noopener noreferrer" className="text-xl max-sm:text-sm">
+                        {graded && (
+                            <div className="text-xl max-sm:text-sm w-[65%] flex justify-between">
+                                Grade: <span className="text-2xl">{grade}/100</span>
+                            </div>
+                        )}
+                        <a href={submittedFile ?? undefined} target="_blank" rel="noopener noreferrer" className="text-xl max-sm:text-sm w-[65%] flex justify-between">
                             Your submission:{" "}
                             <Button variant="outline" size="icon">
                                 <ExternalLink className="h-4 w-4" />

@@ -24,7 +24,7 @@ export default async function HomeworkPage({ params }) {
             <h1 className="text-4xl max-sm:text-2xl text-center m-4">Homework: <span style={{ fontFamily: 'var(--font-gta-medium)' }}>{homework?.title}</span></h1>
             <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4 justify-center p-16">
                 <div>
-                    <p className="text-2xl max-sm:text-lg text-stone-600 mb-4">{homework?.description}</p>
+                    <p className="text-2xl max-sm:text-lg text-justify mb-4">{homework?.description}</p>
                     <HomeworkSubmission homework={homework} />
                 </div>
                 <div className="max-sm:hidden">

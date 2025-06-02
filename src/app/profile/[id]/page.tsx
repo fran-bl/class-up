@@ -73,7 +73,7 @@ export default function ProfilePage() {
         <RoleGate allowedRoles={["admin", "teacher", "student"]}>
             <div className="flex items-center space-x-4 ml-[15%] my-16">
                 <div className='relative w-20 h-20'>
-                    <Avatar className='w-15 h-15 absolute top-3 left-[4]'>
+                    <Avatar className='w-14 h-14 absolute top-4 left-[8]'>
                         {profileData?.avatar_url && <AvatarImage src={profileData.avatar_url} />}
                         <AvatarFallback>{profileData?.username[0]}</AvatarFallback>
                     </Avatar>
@@ -94,21 +94,6 @@ export default function ProfilePage() {
                     <Badge variant="secondary" className="mt-1">Level {level}</Badge>
                 </div>
             </div>
-            <Card className="bg-background m-1 lg:mx-15">
-                <Accordion type="single" collapsible>
-                    <AccordionItem value="badges">
-                        <AccordionTrigger className="flex items-center justify-between hover:cursor-pointer hover:no-underline font-normal pt-0 [&>svg:last-child]:hidden">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">Badges</CardTitle>       
-                            </CardHeader>
-                            <BadgeIcon className="h-4 w-4 text-muted-foreground mr-6" />
-                        </AccordionTrigger>
-                        <AccordionContent>
-                            <BadgesDisplay userId={params.id as string} />
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
-            </Card>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:mx-15">
                 <Card className="bg-background">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -229,6 +214,21 @@ export default function ProfilePage() {
                     </CardContent>
                 </Card>
             )}
+            <Card className="bg-background m-1 lg:mx-15">
+                <Accordion type="single" collapsible>
+                    <AccordionItem value="badges">
+                        <AccordionTrigger className="flex items-center justify-between hover:cursor-pointer hover:no-underline font-normal pt-0 [&>svg:last-child]:hidden">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">Badges</CardTitle>       
+                            </CardHeader>
+                            <BadgeIcon className="h-4 w-4 text-muted-foreground mr-6" />
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <BadgesDisplay userId={params.id as string} />
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            </Card>
         </RoleGate>
     );
 }

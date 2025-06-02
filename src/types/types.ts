@@ -15,6 +15,7 @@ export interface Homework {
     file_url: string | undefined;
     created_at: string | undefined;
     due_date: string | undefined;
+    submitted?: boolean;
 }
 
 export interface Challenge {

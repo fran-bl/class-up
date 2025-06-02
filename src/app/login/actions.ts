@@ -91,7 +91,7 @@ export async function signup(formData: FormData): Promise<AuthResult> {
             success: false,
             error: "Username already taken",
         }
-    } 
+    }
 
     const { data, error } = await supabase.auth.signUp({
         email,

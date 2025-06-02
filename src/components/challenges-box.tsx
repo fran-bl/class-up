@@ -12,7 +12,7 @@ export default function ChallengesBox({ challenges }: { challenges: Challenge[] 
     return (
         <Accordion type="single" collapsible className="w-full mx-auto mb-8 px-5">
             <AccordionItem value="challenges" className="text-center mb-4">
-                <AccordionTrigger className="text-3xl font-bold hover:no-underline cursor-pointer">Challenges</AccordionTrigger>
+                <AccordionTrigger className="text-3xl font-bold hover:no-underline cursor-pointer">Your challenges</AccordionTrigger>
                 <AccordionContent className="flex justify-between text-lg w-1/3 max-lg:w-full mx-auto">
                     <div>
                         <UserRound className="inline-block" />{" - Individual"}

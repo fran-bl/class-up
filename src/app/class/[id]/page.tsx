@@ -1,4 +1,4 @@
-import { getClassDetailsStudent, getHomeworkForClass } from "@/app/actions";
+import { getClassDetailsStudent, getHomeworkForClassStudent } from "@/app/actions";
 import AnimatedHomeworkGrid from "@/components/animated-homework-grid";
 import RoleGate from "@/components/role-gate";
 import { createClient } from "@/utils/supabase/server";
@@ -15,10 +15,15 @@ export default async function ClassPage({ params }) {
     
     const { id } = await params;
     const classDetails = await getClassDetailsStudent(id);
-    const homework = await getHomeworkForClass(id);
-    const sorted = homework.sort((a, b) =>
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-    );
+    const homework = await getHomeworkForClassStudent(id);
+    const sorted = homework
+        .slice()
+        .sort((a, b) => {
+            if (a.submitted === b.submitted) {
+                return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+            }
+            return a.submitted ? 1 : -1;
+        });
 
     return (
         <RoleGate allowedRoles={["admin", "student"]}>
