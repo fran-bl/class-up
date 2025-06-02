@@ -1,3 +1,5 @@
 *.js linguist-language=JavaScript
 *.ts linguist-language=TypeScript
 *.tsx linguist-language=TypeScript
+
+/public/pdf.worker.min.mjs linguist-vendored
