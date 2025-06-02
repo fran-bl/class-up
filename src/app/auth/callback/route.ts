@@ -3,7 +3,7 @@ import { jwtDecode } from "jwt-decode"
 import { type NextRequest, NextResponse } from "next/server"
 
 interface DecodedJWT {
-  user_role: string
+  user_role?: string
 }
 
 export async function GET(request: NextRequest) {
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 
         if (profileError) {
           console.error("Error creating profile:", profileError)
-          return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+          return NextResponse.redirect(`${origin}/unauthorized`)
         }
       }
 
@@ -73,15 +73,19 @@ export async function GET(request: NextRequest) {
       }
 
       const forwardedHost = request.headers.get("x-forwarded-host")
+      const forwardedProto = request.headers.get("x-forwarded-proto")
+      const isLocalEnv = process.env.NODE_ENV === "development"
 
-      if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${redirectTo}`)
+      if (isLocalEnv) {
+        return NextResponse.redirect(`${origin}${redirectTo}`)
+      } else if (forwardedHost) {
+        const protocol = forwardedProto || "https"
+        return NextResponse.redirect(`${protocol}://${forwardedHost}${redirectTo}`)
       } else {
         return NextResponse.redirect(`${origin}${redirectTo}`)
       }
     }
   }
 
-  // Return the user to an error page with instructions
   return NextResponse.redirect(`${origin}/unauthorized`)
 }
