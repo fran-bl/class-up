@@ -6,7 +6,7 @@ import type { Homework } from "@/types/types"
 import { useEffect, useRef, useState } from "react"
 import { Button } from "./ui/button"
 
-export default function AnimatedHomeworkGrid({ homeworks }: { homeworks: Homework[] }) {
+export default function AnimatedHomeworkGrid({ homeworks, isTeacher }: { homeworks: Homework[], isTeacher: boolean }) {
     const [visibleCards, setVisibleCards] = useState<Set<number>>(new Set())
     const cardRefs = useRef<(HTMLDivElement | null)[]>([])
 
@@ -70,7 +70,7 @@ export default function AnimatedHomeworkGrid({ homeworks }: { homeworks: Homewor
                             {hw.submitted && <p className="text-center font-bold text-2xl">Submitted</p>}
                         </CardContent>
                         <CardFooter className="justify-center">
-                            <a href={`/homework/${hw.id}`}>
+                            <a href={isTeacher ? `/teacher/homework/grade/${hw.id}` : `/homework/${hw.id}`}>
                                 <Button className="text-xl cursor-pointer rounded-b-none dark:bg-blue-500 bg-yellow-500 shadow-none text-black hover:bg-opacity-0">Details</Button>
                             </a>
                         </CardFooter>

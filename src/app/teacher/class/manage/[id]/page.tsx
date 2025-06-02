@@ -37,7 +37,7 @@ export default async function ManageClass({ params }) {
                         <AccordionItem value="homeworks">
                             <AccordionTrigger className="text-3xl font-bold hover:no-underline cursor-pointer">Your homeworks</AccordionTrigger>
                             <AccordionContent>
-                                <AnimatedHomeworkGrid homeworks={homeworks} />
+                                <AnimatedHomeworkGrid homeworks={homeworks} isTeacher={true} />
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
