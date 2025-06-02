@@ -67,7 +67,7 @@ export default function FloatingAvatar() {
             <CurrentUserAvatar initials={initials} level={userData.levelData[0]} />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-opacity-90 bg-[var(--color-background)] border-2 border-primary shadow-none grid grid-cols-1 justify-items-center p-0">
+        <DropdownMenuContent className="bg-opacity-90 bg-[var(--color-background)] border-2 border-primary shadow-none grid grid-cols-1 justify-items-center p-0 mt-2">
           <DropdownMenuLabel>{userData.name || "Guest"}</DropdownMenuLabel>
           <DropdownMenuGroup className="flex flex-col items-center justify-center">
             <div className="w-full flex flex-col items-center justify-center mb-5">

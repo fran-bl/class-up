@@ -14,11 +14,12 @@ interface PDFPreviewProps {
 export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const renderTaskRef = useRef<RenderTask | null>(null)
-  const [scale, setScale] = useState<number>(1.25)
+  const [scale, setScale] = useState<number>(1.0)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [numPages, setNumPages] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(true)
   const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy | null>(null)
+  const [originalDimensions, setOriginalDimensions] = useState({ width: 0, height: 0 })
 
   const renderPage = async (pageNum: number, currentScale: number) => {
     if (!pdfDocument) return
@@ -27,7 +28,13 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
 
     try {
       const page = await pdfDocument.getPage(pageNum)
-      const viewport = page.getViewport({ scale: currentScale })
+      const viewport = page.getViewport({ scale: 1.0 })
+
+      if (originalDimensions.width === 0) {
+        setOriginalDimensions({ width: viewport.width, height: viewport.height })
+      }
+
+      const scaledViewport = page.getViewport({ scale: currentScale })
 
       const canvas = canvasRef.current
       if (!canvas) return
@@ -35,8 +42,8 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
       const canvasContext = canvas.getContext("2d")
       if (!canvasContext) return
 
-      canvas.height = viewport.height
-      canvas.width = viewport.width
+      canvas.height = scaledViewport.height
+      canvas.width = scaledViewport.width
 
       if (renderTaskRef.current) {
         renderTaskRef.current.cancel()
@@ -44,7 +51,7 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
 
       const renderContext = {
         canvasContext,
-        viewport,
+        viewport: scaledViewport,
       }
 
       const renderTask = page.render(renderContext)
@@ -52,34 +59,36 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
 
       await renderTask.promise
       setLoading(false)
-    } catch {
+    } catch (error) {
+      console.error("Render error:", error)
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    let isCancelled = false;
-    (async () => {
-      try {
-        setLoading(true)
-        const pdfJS = await import("pdfjs-dist")
-        const workerSrc = window.location.origin + "/pdf.worker.min.mjs"
+    let isCancelled = false
+      ; (async () => {
+        try {
+          setLoading(true)
+          const pdfJS = await import("pdfjs-dist")
+          const workerSrc = window.location.origin + "/pdf.worker.min.mjs"
 
-        pdfJS.GlobalWorkerOptions.workerSrc = workerSrc
+          pdfJS.GlobalWorkerOptions.workerSrc = workerSrc
 
-        const loadingTask = pdfJS.getDocument(fileUrl)
-        const pdf = await loadingTask.promise
+          const loadingTask = pdfJS.getDocument(fileUrl)
+          const pdf = await loadingTask.promise
 
-        if (isCancelled) return
+          if (isCancelled) return
 
-        setPdfDocument(pdf)
-        setNumPages(pdf.numPages)
+          setPdfDocument(pdf)
+          setNumPages(pdf.numPages)
 
-        await renderPage(currentPage, scale)
-      } catch {
-        setLoading(false)
-      }
-    })()
+          await renderPage(currentPage, scale)
+        } catch (error) {
+          console.error("Error loading PDF:", error)
+          setLoading(false)
+        }
+      })()
 
     return () => {
       isCancelled = true
@@ -87,7 +96,7 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
         renderTaskRef.current.cancel()
       }
     }
-  }, [fileUrl, currentPage, scale])
+  }, [fileUrl])
 
   useEffect(() => {
     if (pdfDocument) {
@@ -120,7 +129,7 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
   }
 
   return (
-    <Card className="w-full max-w-full h-200 overflow-hidden bg-[var(--background-color)] shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out pt-0">
+    <Card className="w-full max-w-full overflow-hidden bg-[var(--background-color)] p-0">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="text-lg font-medium">{fileName}</div>
         <div className="flex items-center space-x-2">
@@ -140,14 +149,17 @@ export default function PDFPreview({ fileUrl, fileName = "document.pdf" }: PDFPr
       </div>
 
       <CardContent className="p-0">
-        <div className="flex justify-center p-4 overflow-auto">
-          <div className={`relative ${loading ? "opacity-50" : ""} h-[96vh] w-[56vw] overflow-auto`}>
-            <canvas ref={canvasRef} className="shadow-md" />
-            {loading && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
+        <div className="flex justify-center p-4 bg-muted/20">
+          {/* Fixed size container with overflow */}
+          <div className="relative w-full h-[600px] overflow-auto">
+            <div className={`relative flex justify-center ${loading ? "opacity-50" : ""}`}>
+              <canvas ref={canvasRef} className="shadow-md" />
+              {loading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

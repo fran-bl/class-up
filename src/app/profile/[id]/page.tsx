@@ -151,11 +151,11 @@ export default function ProfilePage() {
                                     color: "hsl(var(--chart-1))",
                                 },
                             }}
-                            className="h-64"
+                            className="h-64 w-full"
                         >
-                            <LineChart data={chartData}>
+                            <LineChart data={chartData.slice(-10)}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="assignment" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+                                <XAxis dataKey="assignment" tick={{ fontSize: 12 }} tickLine={false} axisLine={false} interval={0} padding={{ left: 50, right: 50 }}/>
                                 <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
                                 <ChartTooltip
                                     content={
@@ -219,7 +219,7 @@ export default function ProfilePage() {
                     <AccordionItem value="badges">
                         <AccordionTrigger className="flex items-center justify-between hover:cursor-pointer hover:no-underline font-normal pt-0 [&>svg:last-child]:hidden">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">Badges</CardTitle>       
+                                <CardTitle className="flex items-center gap-2">Badges</CardTitle>
                             </CardHeader>
                             <BadgeIcon className="h-4 w-4 text-muted-foreground mr-6" />
                         </AccordionTrigger>

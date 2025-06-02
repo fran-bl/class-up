@@ -33,7 +33,7 @@ export default async function HomeworkPage({ params }) {
                             {homework.file_url && homework.file_url.endsWith("pdf") && (
                                 <PDFPreview
                                     fileUrl={homework.file_url}
-                                    fileName={homework.file_url.match(/\/([^\/?#]+)$/)?.[1]}
+                                    fileName={homework.title}
                                 />
                             )}
                         </div>
