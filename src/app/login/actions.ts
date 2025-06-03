@@ -17,8 +17,6 @@ type DecodedJWT = {
 export async function login(formData: FormData): Promise<AuthResult> {
     const supabase = await createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
     const data = {
         email: formData.get("email") as string,
         password: formData.get("password") as string,
@@ -93,38 +91,20 @@ export async function signup(formData: FormData): Promise<AuthResult> {
         }
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+            data: {
+                username: username
+            }
+        }
     })
 
     if (error) {
         return {
             success: false,
             error: error.message,
-        }
-    }
-
-    const userId = data.user?.id
-    const avatarUrl = data.user?.user_metadata?.avatar_url || null
-
-    if (!userId) {
-        return {
-            success: false,
-            error: "User ID not found after signup.",
-        }
-    }
-
-    const { error: profileError } = await supabase.rpc("create_profile", {
-        user_id: userId,
-        username: username,
-        avatar_url: avatarUrl
-    })
-
-    if (profileError) {
-        return {
-            success: false,
-            error: profileError.message,
         }
     }
 
