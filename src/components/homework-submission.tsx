@@ -1,6 +1,6 @@
 "use client";
 
-import { addXpToUser, getSubmission, makeSubmission, updateXpGainChallenges, uploadSubmissionFile } from "@/app/actions";
+import { addXpToUser, getSignedFileUrl, getSubmission, makeSubmission, updateXpGainChallenges, uploadSubmissionFile } from "@/app/actions";
 import { useXpToast } from "@/hooks/use-xp-toast";
 import { getFormattedDate } from "@/lib/utils";
 import { Homework } from "@/types/types";
@@ -33,7 +33,11 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
                 setSubmittedDate(getFormattedDate(data.submitted_at));
                 setGraded(data.graded);
                 setGrade(data.grade);
-                setSubittedFile(data.file_url);
+
+                if (data.file_url) {
+                    const signed = await getSignedFileUrl(data.file_url);
+                    setSubittedFile(signed);
+                }
             }
             setLoading(false);
         }
@@ -52,8 +56,8 @@ export default function HomeworkSubmission({ homework }: { homework: Homework })
         }
 
         const uploadRes = await uploadSubmissionFile(file, homework.id);
-        if (uploadRes.success && uploadRes.url) {
-            const submitRes = await makeSubmission(homework.id, homework.class_id, uploadRes.url);
+        if (uploadRes.success && uploadRes.filePath) {
+            const submitRes = await makeSubmission(homework.id, homework.class_id, uploadRes.filePath);
 
             if (!submittedDate) {
                 let early = null;

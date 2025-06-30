@@ -362,7 +362,7 @@ export const getStudentsInClass = async (classId: string) => {
     }
 }
 
-export const makeSubmission = async (homeworkId: string, classId: string, fileUrl: string) => {
+export const makeSubmission = async (homeworkId: string, classId: string, filePath: string) => {
     try {
         const supabase = await createClient();
         const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -379,7 +379,7 @@ export const makeSubmission = async (homeworkId: string, classId: string, fileUr
             .upsert({
                 homework_id: homeworkId,
                 student_id: userId,
-                file_url: fileUrl,
+                file_url: filePath,
                 class_id: classId,
                 submitted_at: new Date().toISOString()
             }, { onConflict: "homework_id,student_id" })
@@ -424,6 +424,26 @@ export const getSubmission = async (homeworkId: string) => {
     }
 }
 
+export const getSignedFileUrl = async (filePath: string, expiresIn = 3600) => {
+    try {
+        const supabase = await createClient();
+        
+        const { data, error } = await supabase.storage
+            .from('homework-submissions')
+            .createSignedUrl(filePath, expiresIn);
+
+        if (error) {
+            console.error("Error creating signed URL:", error);
+            return null;
+        }
+
+        return data.signedUrl;
+    } catch (error) {
+        console.error("Error generating signed URL:", error);
+        return null;
+    }
+}
+
 export const gradeHomework = async (homeworkId: string, studentId: string, grade: number) => {
     try {
         const supabase = await createClient();
@@ -458,7 +478,19 @@ export const getSubmissionsForHomework = async (homeworkId: string) => {
         if (error) {
             throw error;
         }
-        return data;
+        
+        const subsWithUrls = await Promise.all(data.map(async (submission) => {
+            if (submission.file_url) {
+                const signedUrl = await getSignedFileUrl(submission.file_url);
+                return {
+                    ...submission,
+                    file_url: signedUrl
+                };
+            }
+            return submission;
+        }));
+
+        return subsWithUrls;
     } catch (error) {
         console.error("Error fetching submissions:", error);
         return [];
@@ -471,15 +503,15 @@ export const uploadHomeworkFile = async (file: File, title: string) => {
         const ext = file.name.split(".").pop();
 
         const { data, error } = await supabase.storage
-            .from("homework")
-            .upload(`/homework/${title}.${ext}`, file, { upsert: true });
+            .from("homework-files")
+            .upload(`/${title}.${ext}`, file, { upsert: true });
 
         if (error) {
             throw error;
         }
         return {
             success: true,
-            url: supabase.storage.from("homework").getPublicUrl(data?.path).data.publicUrl
+            url: supabase.storage.from("homework-files").getPublicUrl(data?.path).data.publicUrl
         }
     } catch (error) {
         console.error("Error uploading file:", error);
@@ -505,23 +537,25 @@ export const uploadSubmissionFile = async (file: File, hwId: string) => {
 
         const userId = user.id;
         const ext = file.name.split(".").pop();
+        const filePath = `${userId}/${hwId}.${ext}`;
 
         const { data, error } = await supabase.storage
-            .from("homework")
-            .upload(`/submission/${hwId}/${userId}.${ext}`, file, { upsert: true });
+            .from("homework-submissions")
+            .upload(filePath, file, { upsert: true });
 
         if (error) {
             throw error;
         }
+
         return {
             success: true,
-            url: supabase.storage.from("homework").getPublicUrl(data?.path).data.publicUrl
+            filePath: data.path
         }
     } catch (error) {
         console.error("Error uploading file:", error);
         return {
             success: false,
-            url: undefined
+            filePath: undefined
         }
     }
 }
