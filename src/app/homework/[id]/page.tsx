@@ -21,7 +21,7 @@ export default async function HomeworkPage({ params }) {
 
     return (
         <RoleGate allowedRoles={["admin", "student"]}>
-            <h1 className="text-4xl max-sm:text-2xl text-center m-4">Homework: <span style={{ fontFamily: 'var(--font-gta-medium)' }}>{homework?.title}</span></h1>
+            <h1 className="text-4xl max-sm:text-2xl max-sm:pt-12 text-center m-4">Homework: <span style={{ fontFamily: 'var(--font-gta-medium)' }}>{homework?.title}</span></h1>
             <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4 justify-center p-16">
                 <div>
                     <p className="text-2xl max-sm:text-lg text-justify mb-4">{homework?.description}</p>
